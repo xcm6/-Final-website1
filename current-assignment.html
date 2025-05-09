@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSIGNMENT #2 | PSYCHEDELIC EXPERIENCE</title>
+    <link rel="stylesheet" href="css/globals.css">
+    <!-- P5.js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #220033;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 基本容器 */
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInNav 0.8s ease-out forwards 0.5s;
+        }
+
+        .nav-decoration {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            z-index: -1;
+            opacity: 0;
+            animation: decorationFadeIn 1s forwards 0.7s;
+        }
+
+        @keyframes fadeInNav {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes decorationFadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        nav a:hover::before {
+            opacity: 1;
+        }
+
+        .interface-elements {
+            position: absolute;
+            top: 0;
+            right: 100%;
+            width: 200px;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInInterface 1s forwards 1s;
+        }
+
+        .interface-line {
+            position: absolute;
+            height: 1px;
+            background: rgba(255, 0, 255, 0.5);
+            right: 0;
+            top: 50%;
+            width: 80px;
+            transform: scaleX(0);
+            transform-origin: right center;
+            animation: lineExtend 0.5s forwards 1.2s;
+        }
+
+        .interface-circle {
+            position: absolute;
+            border: 1px solid rgba(255, 0, 255, 0.5);
+            border-radius: 50%;
+        }
+
+        .interface-data {
+            position: absolute;
+            color: rgba(255, 0, 255, 0.7);
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            right: 100px;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInInterface {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes lineExtend {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+
+        /* 嗑药效果 */
+        .psychedelic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.1;
+            mix-blend-mode: screen;
+            animation: pulseOpacity 10s infinite;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,0,255,0.2), transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(0,255,255,0.2), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(255,255,0,0.2), transparent 70%);
+        }
+
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.1; filter: hue-rotate(0deg); }
+            50% { opacity: 0.3; filter: hue-rotate(180deg); }
+        }
+
+        .color-shift {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 10;
+            animation: colorShift 15s infinite;
+            background: linear-gradient(45deg, 
+                rgba(255,0,0,0) 0%, 
+                rgba(255,0,255,0.1) 25%, 
+                rgba(0,255,255,0.1) 50%, 
+                rgba(255,255,0,0.1) 75%, 
+                rgba(255,0,0,0) 100%
+            );
+        }
+
+        @keyframes colorShift {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+        }
+
+        .visual-distortion {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            opacity: 0.05;
+            mix-blend-mode: overlay;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M0,50 Q25,25 50,50 T100,50" fill="none" stroke="white" stroke-width="0.5"/></svg>');
+            background-size: 100px 100px;
+            animation: distortBackground 20s infinite;
+        }
+
+        @keyframes distortBackground {
+            0%, 100% { transform: scale(1) rotate(0deg); background-size: 100px 100px; }
+            25% { transform: scale(1.2) rotate(5deg); background-size: 120px 120px; }
+            50% { transform: scale(0.9) rotate(-3deg); background-size: 90px 90px; }
+            75% { transform: scale(1.1) rotate(2deg); background-size: 110px 110px; }
+        }
+
+        /* 网站标题 */
+        .site-title {
+            position: relative;
+            padding: 100px 0 50px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .main-title {
+            font-size: 5vw;
+            line-height: 1;
+            margin: 0;
+            font-weight: 300;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            animation: textGlow 4s infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1vw;
+            color: rgba(255,255,255,0.6);
+            margin-top: 20px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,0,255,0.5), 0 0 20px rgba(255,0,255,0.3); }
+            50% { text-shadow: 0 0 20px rgba(0,255,255,0.5), 0 0 40px rgba(0,255,255,0.3); }
+        }
+
+        /* P5.js 画布网格 */
+        .p5-grid-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 50px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .p5-item {
+            position: relative;
+            aspect-ratio: 1/1;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        .p5-item:hover {
+            transform: scale(1.02);
+            border-color: rgba(255,0,255,0.5);
+            box-shadow: 0 0 20px rgba(255,0,255,0.3);
+        }
+
+        .p5-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* 分隔部分 */
+        .section-divider {
+            position: relative;
+            height: 200px;
+            margin: 80px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: 3vw;
+            text-transform: uppercase;
+            letter-spacing: 1em;
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            animation: textFlickerGlow 8s infinite;
+            padding-left: 1em; /* 补偿letter-spacing */
+        }
+
+        @keyframes textFlickerGlow {
+            0%, 100% { opacity: 0.8; filter: blur(0px); }
+            25% { opacity: 1; filter: blur(1px); }
+            30% { opacity: 0.8; filter: blur(0px); }
+            35% { opacity: 1; filter: blur(2px); }
+            40% { opacity: 0.9; filter: blur(0px); }
+            45% { opacity: 1; filter: blur(1px); }
+            50% { opacity: 0.8; filter: blur(0px); }
+            55% { opacity: 0.9; filter: blur(2px); }
+            60% { opacity: 1; filter: blur(0px); }
+            70% { opacity: 0.8; filter: blur(1px); }
+            80% { opacity: 1; filter: blur(0px); }
+        }
+
+        /* 背景噪点 */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,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');
+            opacity: 0.06;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* 呼吸效果 */
+        .breathing-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 30%, #220033 100%);
+            mix-blend-mode: multiply;
+            animation: breathing 10s infinite;
+            pointer-events: none;
+            z-index: 6;
+        }
+
+        @keyframes breathing {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 实验排版部分 */
+        .experimental-typography {
+            margin: 80px 50px;
+        }
+
+        .exp-typo-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="noise"></div>
+        <div class="psychedelic-overlay"></div>
+        <div class="color-shift"></div>
+        <div class="visual-distortion"></div>
+        <div class="breathing-effect"></div>
+        
+        <!-- 导航栏 -->
+        <nav>
+            <div class="nav-links">
+                <div class="nav-decoration"></div>
+                <a href="index.html" data-text="01">HOME</a>
+                <a href="about.html" data-text="02">ABOUT</a>
+                <a href="new-projects.html" data-text="03">PROJECTS</a>
+                <a href="current-assignment.html" data-text="04">ASSIGNMENT #2</a>
+                <a href="assignment3.html" data-text="05">ASSIGNMENT #3</a>
+                <a href="assignment4.html" data-text="06">ASSIGNMENT #4</a>
+                <a href="final-choice.html" data-text="07">FINAL</a>
+            </div>
+            <div class="interface-elements">
+                <div class="interface-line interface-line-1"></div>
+                <div class="interface-circle" style="top: 30%; right: 20px; width: 30px; height: 30px;"></div>
+                <div class="interface-circle" style="top: 40%; right: 40px; width: 20px; height: 20px;"></div>
+                <div class="interface-data" style="top: 25%; right: 40px;">SYSTEM.NAVIGATION</div>
+                <div class="interface-data" style="top: 35%; right: 60px;">INTERFACE.ACTIVE</div>
+            </div>
+        </nav>
+        
+        <!-- 标题部分 -->
+        <div class="site-title">
+            <h1 class="main-title">ASSIGNMENT #2</h1>
+            <div class="subtitle">TYPOGRAPHY EXPLORATIONS</div>
+        </div>
+        
+        <!-- P5.js 画布网格 (第一部分) -->
+        <div class="p5-grid-container">
+            <div class="p5-item">
+                <div id="canvas1" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas2" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas3" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas4" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas5" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas6" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas7" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas8" class="p5-canvas"></div>
+            </div>
+            <div class="p5-item">
+                <div id="canvas9" class="p5-canvas"></div>
+            </div>
+        </div>
+        
+        <!-- 分隔部分 -->
+        <div class="section-divider">
+            <h2 class="section-title">EXPERIMENTAL TYPOGRAPHY</h2>
+        </div>
+        
+        <!-- 实验排版部分 -->
+        <div class="experimental-typography">
+            <div class="exp-typo-container">
+                <div class="p5-item">
+                    <div id="typo1" class="p5-canvas"></div>
+                </div>
+                <div class="p5-item">
+                    <div id="typo2" class="p5-canvas"></div>
+                </div>
+                <div class="p5-item">
+                    <div id="typo3" class="p5-canvas"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 随机生成颜色
+        function getRandomColor() {
+            const colors = [
+                '#ff00ff', '#00ffff', '#ffff00', 
+                '#ff0088', '#00ff88', '#8800ff',
+                '#ff8800', '#0088ff', '#88ff00'
+            ];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        // 第一个P5.js实例 - 字体艺术1
+        new p5(function(p) {
+            let font, pts = [], sample = 0.1;
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+                pts = font.textToPoints('Print', 50, p.height/2, 200, { sampleFactor: sample });
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(255, 100, 255, 150);
+                p.noStroke();
+                
+                for (let point of pts) {
+                    let d = p.dist(p.mouseX, p.mouseY, point.x, point.y);
+                    let offset = p.map(d, 0, 200, 20, 0);
+                    p.ellipse(point.x + p.random(-offset, offset), point.y + p.random(-offset, offset), 8);
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas1');
+        
+        // 第二个P5.js实例 - 字体艺术2
+        new p5(function(p) {
+            let font, basePts, particles = [];
+            
+            class Particle {
+                constructor(x, y) { 
+                    this.x = x; 
+                    this.y = y; 
+                }
+                show() { 
+                    p.ellipse(this.x, this.y, 10); 
+                }
+            }
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(250);
+                basePts = font.textToPoints('Print', 50, p.height/2 + 50, 250, { sampleFactor: 0.08 });
+                rebuild();
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(0, 255, 255, 150);
+                p.noStroke();
+                
+                for (let particle of particles) particle.show();
+            };
+            
+            p.mousePressed = function() {
+                if (particles.length > 0) particles.splice(0, 1);
+                else rebuild();
+            };
+            
+            function rebuild() {
+                particles = basePts.map(point => new Particle(point.x, point.y));
+            }
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas2');
+        
+        // 第三个P5.js实例 - 字体艺术3
+        new p5(function(p) {
+            let font, basePts = [], pivot;
+            let stamps = []; // 存储拖拽后的"印"
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+                // 预计算文字顶点
+                basePts = font.textToPoints('Print', 50, p.height/2, 200, { sampleFactor: 0.08 });
+                pivot = p.createVector(p.width/2, p.height/2);
+                p.background(0);
+            };
+            
+            p.draw = function() {
+                p.background(0, 10); // 使背景刷新变得非常慢，这样之前的印记可以保留更长时间
+                
+                // 显示一个淡淡的字体轮廓作为参考
+                p.fill(80, 80, 80, 50);
+                p.noStroke();
+                for (let point of basePts) {
+                    p.ellipse(point.x, point.y, 4);
+                }
+                
+                // 显示之前的印记
+                for (let stamp of stamps) {
+                    p.fill(stamp.color.r, stamp.color.g, stamp.color.b, stamp.color.a);
+                    for (let point of stamp.points) {
+                        p.ellipse(point.x, point.y, 8);
+                    }
+                }
+                
+                // 如果鼠标按下，实时显示当前拖拽位置的印记
+                if (p.mouseIsPressed && p.mouseX > 0 && p.mouseY > 0 && p.mouseX < p.width && p.mouseY < p.height) {
+                    p.fill(255, 255, 0, 150);
+                    
+                    // 计算当前拖拽的印记位置
+                    let currentPoints = [];
+                    for (let point of basePts) {
+                        let x = point.x + (p.mouseX - 200);
+                        let y = point.y + (p.mouseY - p.height/2);
+                        p.ellipse(x, y, 8);
+                        currentPoints.push({x: x, y: y});
+                    }
+                    
+                    // 当鼠标释放时添加印记
+                    if (p.mouseIsPressed && !p.pmouseIsPressed) {
+                        stamps.push({
+                            points: currentPoints,
+                            color: {r: 255, g: 255, b: 0, a: 150}
+                        });
+                    }
+                }
+            };
+            
+            // 当鼠标释放时添加新印记
+            p.mouseReleased = function() {
+                if (p.mouseX > 0 && p.mouseY > 0 && p.mouseX < p.width && p.mouseY < p.height) {
+                    let stampPoints = [];
+                    for (let point of basePts) {
+                        stampPoints.push({
+                            x: point.x + (p.mouseX - 200),
+                            y: point.y + (p.mouseY - p.height/2)
+                        });
+                    }
+                    
+                    // 随机产生不同颜色的印记
+                    let colors = [
+                        {r: 255, g: 255, b: 0, a: 150},  // 黄色
+                        {r: 0, g: 255, b: 255, a: 150},  // 青色
+                        {r: 255, g: 0, b: 255, a: 150}   // 洋红色
+                    ];
+                    let randomColor = colors[Math.floor(p.random(colors.length))];
+                    
+                    stamps.push({
+                        points: stampPoints,
+                        color: randomColor
+                    });
+                }
+            };
+            
+            // 按 C 清空画布和所有印记
+            p.keyPressed = function() {
+                if (p.key === 'c' || p.key === 'C') {
+                    p.background(0);
+                    stamps = [];
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas3');
+        
+        // 第四个P5.js实例 - 字体艺术4
+        new p5(function(p) {
+            let font, sample = 0.05;
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                let pts = font.textToPoints('Hello', 50, p.height/2, 200, { sampleFactor: sample });
+                
+                p.fill(255, 100);
+                p.noStroke();
+                
+                for (let point of pts) {
+                    p.ellipse(point.x, point.y, 6);
+                }
+            };
+            
+            p.keyPressed = function() {
+                if (p.keyCode === p.UP_ARROW) sample = p.min(sample + 0.01, 0.2);
+                if (p.keyCode === p.DOWN_ARROW) sample = p.max(sample - 0.01, 0.01);
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas4');
+        
+        // 第五个P5.js实例 - 字体艺术5
+        new p5(function(p) {
+            let font;
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                
+                let cfg = [
+                    {sz: 250, f: 0.05, c: p.color(255, 0, 255, 50)},
+                    {sz: 200, f: 0.1, c: p.color(0, 255, 255, 50)},
+                    {sz: 150, f: 0.2, c: p.color(255, 255, 0, 50)}
+                ];
+                
+                for (let c of cfg) {
+                    let pts = font.textToPoints('Hello', 50, p.height/2, c.sz, { sampleFactor: c.f });
+                    
+                    p.stroke(c.c);
+                    p.noFill();
+                    p.beginShape();
+                    for (let point of pts) p.vertex(point.x, point.y);
+                    p.endShape();
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas5');
+        
+        // 第六个P5.js实例 - 字体艺术6
+        new p5(function(p) {
+            let font, homePts, movers = [];
+            
+            class Mover {
+                constructor(x, y) { 
+                    this.home = p.createVector(x, y); 
+                    this.pos = this.home.copy(); 
+                }
+                
+                update() {
+                    let m = p.createVector(p.mouseX, p.mouseY);
+                    let d = p5.Vector.dist(m, this.pos);
+                    if (d < 100) this.pos.lerp(m, 0.1);
+                    else this.pos.lerp(this.home, 0.05);
+                }
+                
+                show() { 
+                    p.ellipse(this.pos.x, this.pos.y, 8); 
+                }
+            }
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+                homePts = font.textToPoints('Hello', 50, p.height/2, 200, { sampleFactor: 0.1 });
+                movers = homePts.map(point => new Mover(point.x, point.y));
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(255, 0, 255, 150);
+                p.noStroke();
+                
+                for (let m of movers) { 
+                    m.update(); 
+                    m.show(); 
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas6');
+        
+        // 第七个P5.js实例 - 字体艺术7（完全重写，简化版）
+        new p5(function(p) {
+            let font;
+            let textStr = "3D";
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textAlign(p.CENTER, p.CENTER);
+            };
+            
+            p.draw = function() {
+                p.background(0, 20);
+                
+                // 使用大字号，确保可见
+                let fontSize = p.min(p.width, p.height) * 0.3;
+                p.textSize(fontSize);
+                
+                // 获取鼠标位置，相对于画布中心
+                let mouseXOffset = (p.mouseX - p.width/2) * 0.05;
+                let mouseYOffset = (p.mouseY - p.height/2) * 0.05;
+                
+                // 使用多层叠加创建3D效果
+                let layers = 20;
+                for (let i = layers; i >= 0; i--) {
+                    // 计算当前层的偏移和透明度
+                    let z = i / layers;
+                    let offsetX = mouseXOffset * i;
+                    let offsetY = mouseYOffset * i;
+                    let alpha = p.map(i, 0, layers, 50, 255);
+                    
+                    // 绘制当前层的文字
+                    p.fill(0, p.map(i, 0, layers, 100, 255), 255, alpha);
+                    p.noStroke();
+                    p.text(textStr, p.width/2 + offsetX, p.height/2 + offsetY);
+                }
+                
+                // 添加一些动态波浪点增强3D感
+                p.drawWavePoints();
+            };
+            
+            p.drawWavePoints = function() {
+                // 在文字周围绘制一些动态点
+                p.noStroke();
+                let time = p.millis() * 0.001;
+                
+                for (let i = 0; i < 100; i++) {
+                    let angle = i * 0.2 + time;
+                    let radius = 100 + p.sin(angle * 0.5) * 30;
+                    let x = p.width/2 + p.cos(angle) * radius;
+                    let y = p.height/2 + p.sin(angle) * radius;
+                    
+                    // 根据距离中心的远近改变大小和颜色
+                    let size = p.map(p.sin(angle * 2 + time), -1, 1, 3, 8);
+                    let brightness = p.map(p.cos(angle + time), -1, 1, 100, 255);
+                    
+                    p.fill(0, brightness, brightness, 150);
+                    p.ellipse(x, y, size, size);
+                }
+                
+                // 添加一些连接线
+                p.stroke(0, 150, 255, 50);
+                p.strokeWeight(0.5);
+                for (let i = 0; i < 12; i++) {
+                    let angle1 = i * 0.5 + time;
+                    let angle2 = (i + 1) * 0.5 + time;
+                    
+                    let radius1 = 100 + p.sin(angle1) * 30;
+                    let radius2 = 100 + p.sin(angle2) * 30;
+                    
+                    let x1 = p.width/2 + p.cos(angle1) * radius1;
+                    let y1 = p.height/2 + p.sin(angle1) * radius1;
+                    let x2 = p.width/2 + p.cos(angle2) * radius2;
+                    let y2 = p.height/2 + p.sin(angle2) * radius2;
+                    
+                    p.line(x1, y1, x2, y2);
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas7');
+        
+        // 第八个P5.js实例 - 字体艺术8
+        new p5(function(p) {
+            let font, pts = [], noiseOffsets = [];
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+                pts = font.textToPoints('World', 50, p.height/2, 200, { sampleFactor: 0.06 });
+                // 每个点一个噪声偏移
+                noiseOffsets = pts.map(() => p.random(1000));
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(255, 255, 0, 150);
+                p.noStroke();
+                
+                for (let i = 0; i < pts.length; i++) {
+                    let point = pts[i];
+                    // 用 Perlin noise 驱动每个点的偏移
+                    let angle = p.noise(noiseOffsets[i] + p.frameCount * 0.005) * p.TWO_PI * 2;
+                    let r = p.map(p.noise(noiseOffsets[i] + p.frameCount * 0.005), 0, 1, -20, 20);
+                    let x = point.x + p.cos(angle) * r;
+                    let y = point.y + p.sin(angle) * r;
+                    p.ellipse(x, y, 6);
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas8');
+        
+        // 第九个P5.js实例 - 字体艺术9
+        new p5(function(p) {
+            let font, particles = [];
+            let exploded = false;
+            
+            class P {
+                constructor(x, y) {
+                    this.home = p.createVector(x, y);
+                    this.pos = this.home.copy();
+                    this.vel = p.createVector(0, 0);
+                }
+                
+                update() {
+                    if (exploded) {
+                        this.vel.mult(0.96);          // 摩擦
+                        this.pos.add(this.vel);
+                        // 恢复时慢慢回到原位
+                        if (this.vel.mag() < 0.5) {
+                            this.pos = p5.Vector.lerp(this.pos, this.home, 0.05);
+                        }
+                    }
+                }
+                
+                show() {
+                    p.ellipse(this.pos.x, this.pos.y, 8);
+                }
+            }
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font);
+                p.textSize(200);
+                let pts = font.textToPoints('World', 50, p.height/2, 200, { sampleFactor: 0.06 });
+                particles = pts.map(point => new P(point.x, point.y));
+            };
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(255, 0, 255, 150);
+                p.noStroke();
+                
+                for (let particle of particles) {
+                    particle.update();
+                    particle.show();
+                }
+            };
+            
+            p.mousePressed = function() {
+                // 给每个粒子一个随机初速度
+                exploded = true;
+                for (let particle of particles) {
+                    let dir = p5.Vector.sub(particle.home, p.createVector(p.width/2, p.height/2)).normalize();
+                    particle.vel = p5.Vector.random2D().mult(p.random(5, 15)).add(dir.mult(p.random(2, 8)));
+                }
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        }, 'canvas9');
+        
+        // 实验排版1 - Hello-World变形动画
+        new p5(function(p) {
+            let font, A = [], B = [], t = 0;
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font); 
+                p.textSize(180);
+                A = font.textToPoints('Hello', 50, p.height/2, 180, { sampleFactor: 0.08 });
+                B = font.textToPoints('World', 50, p.height/2, 180, { sampleFactor: 0.08 });
+            };
+            
+            p.draw = function() {
+                p.background(30, 30);
+                p.stroke(255); 
+                p.noFill();
+                
+                p.beginShape();
+                for (let i = 0; i < A.length; i++) {
+                    let m = (p.sin(t) + 1) / 2;
+                    p.vertex(p.lerp(A[i].x, B[i].x, m), p.lerp(A[i].y, B[i].y, m));
+                }
+                p.endShape(p.CLOSE);
+                
+                t += 0.02;
+                
+                // 按下时加上红色点阵叠加
+                if (p.mouseIsPressed) {
+                    p.stroke(255, 0, 0);
+                    for (let i = 0; i < A.length; i++) {
+                        let m2 = (p.cos(t) + 1) / 2;
+                        p.point(p.lerp(A[i].x, B[i].x, m2), p.lerp(A[i].y, B[i].y, m2));
+                    }
+                }
+                
+                // 底部白字标题
+                p.noStroke();
+                p.fill(255);
+                p.textSize(16);
+                p.textAlign(p.CENTER);
+                p.text('Hello–World Morph', p.width/2, p.height-20);
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+                A = font.textToPoints('Hello', 50, p.height/2, 180, { sampleFactor: 0.08 });
+                B = font.textToPoints('World', 50, p.height/2, 180, { sampleFactor: 0.08 });
+            };
+        }, 'typo1');
+        
+        // 实验排版2 - 迷幻Print超现实效果
+        new p5(function(p) {
+            let font, pts = [], noiseOff = [], center;
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.colorMode(p.HSB, 360, 100, 100, 100);
+                p.textFont(font);
+                p.textSize(200);
+                
+                // 获取文字顶点和噪声偏移
+                pts = font.textToPoints('Print', 50, p.height/2, 200, { sampleFactor: 0.06 });
+                noiseOff = pts.map(() => p.random(1000));
+                center = p.createVector(p.width/2, p.height/2);
+                p.noStroke();
+            };
+            
+            p.draw = function() {
+                p.background((p.frameCount * 0.5) % 360, 50, 10, 30);
+                
+                // 核心扭曲：点沿径向和切向噪声偏移
+                for (let i = 0; i < pts.length; i++) {
+                    let point = pts[i];
+                    let off = p.noise(noiseOff[i], p.frameCount * 0.005);
+                    
+                    // 径向摆动
+                    let angle = p.atan2(point.y - center.y, point.x - center.x) + off * p.TWO_PI * 2;
+                    let radius = p.dist(point.x, point.y, center.x, center.y) + p.sin(p.frameCount * 0.02 + off * 10) * 20;
+                    let x = center.x + p.cos(angle) * radius;
+                    let y = center.y + p.sin(angle) * radius;
+                    
+                    // 色相随时间和位置变化
+                    let h = (p.map(i, 0, pts.length, 0, 360) + p.frameCount) % 360;
+                    p.fill(h, 80, 100, 80);
+                    p.ellipse(x, y, off * 12 + 4);
+                }
+                
+                // 按下时：时间反转+"幻影"拉丝
+                if (p.mouseIsPressed) {
+                    for (let k = 0; k < 5; k++) {
+                        let tOff = p.frameCount * (k % 2 ? -0.1 : 0.1);
+                        for (let point of pts) {
+                            let a = p.noise(point.x * 0.01, point.y * 0.01, tOff) * p.TWO_PI * 3;
+                            let r = 30 + p.sin(tOff + a) * 30;
+                            let x = point.x + p.cos(a) * r;
+                            let y = point.y + p.sin(a) * r;
+                            p.fill(p.random(360), 100, 100, 20);
+                            p.ellipse(x, y, 20);
+                        }
+                    }
+                }
+                
+                // 底部标题
+                p.fill(0, 0, 100);
+                p.textSize(16);
+                p.textAlign(p.CENTER);
+                p.text('Print PsycheDream', p.width/2, p.height-20);
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+                pts = font.textToPoints('Print', 50, p.height/2, 200, { sampleFactor: 0.06 });
+                center = p.createVector(p.width/2, p.height/2);
+            };
+        }, 'typo2');
+        
+        // 实验排版3 - World雨滴效果
+        new p5(function(p) {
+            let font, rain = [], letters = [];
+            const WORD = 'WORLD';
+            
+            p.preload = function() {
+                font = p.loadFont('https://cdnjs.cloudflare.com/ajax/libs/topcoat/0.8.0/font/SourceCodePro-Bold.otf');
+            };
+            
+            p.setup = function() {
+                p.createCanvas(p.windowWidth, p.windowHeight);
+                p.textFont(font); 
+                p.textSize(20);
+                
+                resetRain();
+            };
+            
+            function resetRain() {
+                rain = [];
+                letters = [];
+                
+                // 普通雨滴
+                for (let i = 0; i < 300; i++) {
+                    rain.push({
+                        x: p.random(p.width),
+                        y: p.random(-600, 0),
+                        speed: p.random(2, 6),
+                        isLetter: false,
+                        ch: ''
+                    });
+                }
+                
+                // 字母雨
+                for (let i = 0; i < WORD.length; i++) {
+                    letters.push({
+                        x: p.random(p.width),
+                        y: p.random(-600, 0),
+                        speed: p.random(2, 4),
+                        isLetter: true,
+                        ch: WORD[i]
+                    });
+                }
+                
+                rain = rain.concat(letters);
+            }
+            
+            p.draw = function() {
+                p.background(0, 30);
+                p.fill(100, 200, 255);
+                p.noStroke();
+                
+                // 绘制雨滴和字母
+                for (let r of rain) {
+                    if (r.isLetter) {
+                        p.fill(255);
+                        p.text(r.ch, r.x, r.y);
+                    } else {
+                        p.stroke(100, 200, 255);
+                        p.line(r.x, r.y, r.x, r.y + 8);
+                    }
+                    
+                    // 更新位置
+                    r.y += r.speed;
+                    if (r.y > p.height) r.y = p.random(-200, 0);
+                }
+                
+                // 鼠标按下时：字母雨加速闪烁
+                if (p.mouseIsPressed) {
+                    for (let r of rain) {
+                        if (r.isLetter) {
+                            p.fill(p.random(255), p.random(255), p.random(255));
+                            p.text(r.ch, r.x, r.y);
+                            r.y -= 8;
+                        }
+                    }
+                }
+                
+                // 底部白字标题
+                p.noStroke();
+                p.fill(255);
+                p.textSize(16);
+                p.textAlign(p.CENTER);
+                p.text('World Rain Letters', p.width/2, p.height-20);
+            };
+            
+            p.windowResized = function() {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+                resetRain();
+            };
+        }, 'typo3');
+    </script>
+</body>
+</html> 

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI测试问题 | E-Girl风格</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="heart-particles" id="heartParticles"></div>
+    
+    <a href="index.html" class="return-link">返回首页</a>
+    
+    <div class="container">
+        <h1>MBTI人格测试</h1>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="progress"></div>
+        </div>
+        
+        <div class="question-container">
+            <div class="question-number" id="questionNumber">问题 1/32</div>
+            <div class="question-text" id="questionText">加载问题中...</div>
+            
+            <div class="options" id="options">
+                <!-- 选项将由JS动态添加 -->
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn" id="prevBtn">上一题</button>
+                <button class="btn" id="nextBtn">下一题</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // MBTI测试问题数据
+        const questions = [
+            // E vs I 外向与内向
+            {
+                question: "在社交场合中，你通常会：",
+                options: [
+                    { text: "与许多不同的人交谈，享受社交互动", value: "E" },
+                    { text: "与少数几个熟人交谈，或者独自一人", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "当你需要充电时，你更喜欢：",
+                options: [
+                    { text: "与朋友一起出去，参与社交活动", value: "E" },
+                    { text: "一个人待着，享受安静的时间", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "你更倾向于：",
+                options: [
+                    { text: "先说出想法，然后再思考", value: "E" },
+                    { text: "先思考，然后再分享想法", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "当你处于团体环境中时，你更倾向于：",
+                options: [
+                    { text: "成为讨论的积极参与者", value: "E" },
+                    { text: "更多地观察和倾听", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "长时间的社交活动后，你通常会感到：",
+                options: [
+                    { text: "精力充沛，渴望更多互动", value: "E" },
+                    { text: "精疲力尽，需要独处时间来恢复", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "对于新的社交场合，你通常：",
+                options: [
+                    { text: "很容易融入并结交新朋友", value: "E" },
+                    { text: "需要时间来适应并融入", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "在工作或学习中，你更喜欢：",
+                options: [
+                    { text: "在小组中合作完成任务", value: "E" },
+                    { text: "独立工作，自己掌控进度", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            {
+                question: "你通常会被描述为：",
+                options: [
+                    { text: "开朗、健谈、善于表达", value: "E" },
+                    { text: "安静、深思熟虑、保留", value: "I" }
+                ],
+                dimension: "EI"
+            },
+            
+            // S vs N 感觉与直觉
+            {
+                question: "当你收集信息时，你更倾向于关注：",
+                options: [
+                    { text: "具体的事实和细节", value: "S" },
+                    { text: "全局图景和可能性", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "你更喜欢：",
+                options: [
+                    { text: "现实的、实用的解决方案", value: "S" },
+                    { text: "创新的、理论性的想法", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "当解决问题时，你更依赖：",
+                options: [
+                    { text: "过去的经验和已经被证明有效的方法", value: "S" },
+                    { text: "直觉和创新的方法", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "你更感兴趣的是：",
+                options: [
+                    { text: "当下发生的事情和实际情况", value: "S" },
+                    { text: "未来的可能性和潜在发展", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "当阅读或观看内容时，你更注重：",
+                options: [
+                    { text: "具体的细节和事实", value: "S" },
+                    { text: "隐含的意义和概念", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "你认为自己是：",
+                options: [
+                    { text: "脚踏实地、注重实际的人", value: "S" },
+                    { text: "富有想象力、注重创意的人", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "你更喜欢的职业会涉及：",
+                options: [
+                    { text: "处理具体的事实和有序的程序", value: "S" },
+                    { text: "探索新想法和设计创新解决方案", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            {
+                question: "你更相信：",
+                options: [
+                    { text: "直接经验和观察到的事实", value: "S" },
+                    { text: "直觉和对潜在模式的认识", value: "N" }
+                ],
+                dimension: "SN"
+            },
+            
+            // T vs F 思考与情感
+            {
+                question: "做决定时，你通常会：",
+                options: [
+                    { text: "依据逻辑和客观分析", value: "T" },
+                    { text: "考虑个人价值观和对他人的影响", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "你更看重：",
+                options: [
+                    { text: "客观的真相和原则", value: "T" },
+                    { text: "人际和谐与个人感受", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "给予反馈时，你更倾向于：",
+                options: [
+                    { text: "直接、坦率，注重事实和解决问题", value: "T" },
+                    { text: "委婉、支持性，考虑他人感受", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "在讨论或辩论中，你更看重：",
+                options: [
+                    { text: "找出逻辑错误和保持客观", value: "T" },
+                    { text: "理解不同立场并维护和谐", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "当朋友向你诉说问题时，你更可能：",
+                options: [
+                    { text: "分析情况并提供解决方案", value: "T" },
+                    { text: "提供情感支持和理解", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "你认为自己：",
+                options: [
+                    { text: "理性、分析性强", value: "T" },
+                    { text: "富有同情心、体贴他人", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "在工作环境中，你更重视：",
+                options: [
+                    { text: "效率、逻辑和结果", value: "T" },
+                    { text: "团队和谐、个人价值和成长", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            {
+                question: "面对冲突时，你更倾向于：",
+                options: [
+                    { text: "直面问题，寻求基于逻辑的解决方案", value: "T" },
+                    { text: "考虑所有人的感受，寻求和解", value: "F" }
+                ],
+                dimension: "TF"
+            },
+            
+            // J vs P 判断与感知
+            {
+                question: "你更喜欢：",
+                options: [
+                    { text: "计划和组织活动", value: "J" },
+                    { text: "保持灵活，随机应变", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "对于截止日期，你通常：",
+                options: [
+                    { text: "提前完成任务", value: "J" },
+                    { text: "在最后期限前冲刺完成", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "你的工作空间通常：",
+                options: [
+                    { text: "整洁有序，一切物品都有固定位置", value: "J" },
+                    { text: "有些凌乱，但你知道东西大致在哪里", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "你更喜欢的工作方式是：",
+                options: [
+                    { text: "按部就班，一次完成一个任务", value: "J" },
+                    { text: "同时处理多个任务，根据灵感切换", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "关于休闲活动，你更倾向于：",
+                options: [
+                    { text: "提前计划和安排活动", value: "J" },
+                    { text: "即兴决定，看当下心情", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "你更喜欢的环境是：",
+                options: [
+                    { text: "结构化和可预测的", value: "J" },
+                    { text: "灵活和适应性强的", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "你更倾向于：",
+                options: [
+                    { text: "尽快做出决定并坚持下去", value: "J" },
+                    { text: "保持选择开放，收集更多信息", value: "P" }
+                ],
+                dimension: "JP"
+            },
+            {
+                question: "面对新项目时，你更喜欢：",
+                options: [
+                    { text: "创建详细的计划和时间表", value: "J" },
+                    { text: "边做边看，根据需要调整方向", value: "P" }
+                ],
+                dimension: "JP"
+            }
+        ];
+        
+        // 初始化变量
+        let currentQuestion = 0;
+        let answers = [];
+        
+        // DOM元素
+        const questionNumber = document.getElementById('questionNumber');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('options');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressBar = document.getElementById('progress');
+        
+        // 从本地存储加载先前的回答（如果有）
+        function loadAnswers() {
+            const savedAnswers = localStorage.getItem('mbtiAnswers');
+            if (savedAnswers) {
+                answers = JSON.parse(savedAnswers);
+                // 如果有保存的答案，跳转到最后回答的问题之后
+                if (answers.length > 0 && answers.length < questions.length) {
+                    currentQuestion = answers.length;
+                }
+            } else {
+                // 初始化空答案数组
+                answers = new Array(questions.length).fill(null);
+            }
+        }
+        
+        // 显示当前问题
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            
+            questionNumber.textContent = `问题 ${currentQuestion + 1}/${questions.length}`;
+            questionText.textContent = question.question;
+            
+            // 清空选项容器
+            optionsContainer.innerHTML = '';
+            
+            // 为每个选项创建元素
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (answers[currentQuestion] === option.value) {
+                    optionElement.classList.add('selected');
+                }
+                
+                const letter = String.fromCharCode(65 + index); // A, B, C...
+                
+                optionElement.innerHTML = `
+                    <span class="option-letter">${letter}</span>
+                    ${option.text}
+                `;
+                
+                optionElement.addEventListener('click', () => {
+                    // 移除所有选项的selected类
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // 添加selected类到当前选项
+                    optionElement.classList.add('selected');
+                    
+                    // 保存答案
+                    answers[currentQuestion] = option.value;
+                    localStorage.setItem('mbtiAnswers', JSON.stringify(answers));
+                    
+                    // 自动进入下一题（延迟0.5秒）
+                    if (currentQuestion < questions.length - 1) {
+                        setTimeout(() => {
+                            nextQuestion();
+                        }, 500);
+                    }
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // 更新按钮状态
+            updateButtons();
+            
+            // 更新进度条
+            updateProgress();
+        }
+        
+        // 更新按钮状态
+        function updateButtons() {
+            prevBtn.disabled = currentQuestion === 0;
+            prevBtn.style.opacity = currentQuestion === 0 ? '0.5' : '1';
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = '查看结果';
+            } else {
+                nextBtn.textContent = '下一题';
+            }
+        }
+        
+        // 更新进度条
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+        
+        // 下一个问题
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+                window.scrollTo(0, 0);
+            } else {
+                // 如果是最后一个问题，计算结果并跳转
+                calculateResult();
+            }
+        }
+        
+        // 上一个问题
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion();
+                window.scrollTo(0, 0);
+            }
+        }
+        
+        // 计算MBTI结果
+        function calculateResult() {
+            // 初始化计数器
+            let counts = {
+                E: 0, I: 0,
+                S: 0, N: 0,
+                T: 0, F: 0,
+                J: 0, P: 0
+            };
+            
+            // 统计每个维度的选择
+            answers.forEach((answer, index) => {
+                if (answer) {
+                    counts[answer]++;
+                }
+            });
+            
+            // 确定每个维度的倾向
+            const result = {
+                EI: counts.E > counts.I ? 'E' : 'I',
+                SN: counts.S > counts.N ? 'S' : 'N',
+                TF: counts.T > counts.F ? 'T' : 'F',
+                JP: counts.J > counts.P ? 'J' : 'P'
+            };
+            
+            // 计算百分比
+            const percentages = {
+                EI: Math.round((counts.E > counts.I ? counts.E : counts.I) / 8 * 100),
+                SN: Math.round((counts.S > counts.N ? counts.S : counts.N) / 8 * 100),
+                TF: Math.round((counts.T > counts.F ? counts.T : counts.F) / 8 * 100),
+                JP: Math.round((counts.J > counts.P ? counts.J : counts.P) / 8 * 100)
+            };
+            
+            // 组合成MBTI类型
+            const mbtiType = result.EI + result.SN + result.TF + result.JP;
+            
+            // 保存结果到本地存储
+            const resultData = {
+                type: mbtiType,
+                counts: counts,
+                percentages: percentages
+            };
+            
+            localStorage.setItem('mbtiResult', JSON.stringify(resultData));
+            
+            // 跳转到结果页面
+            window.location.href = 'result.html';
+        }
+        
+        // 添加按钮事件监听器
+        prevBtn.addEventListener('click', previousQuestion);
+        nextBtn.addEventListener('click', () => {
+            if (answers[currentQuestion] === null) {
+                alert('请选择一个选项再继续');
+                return;
+            }
+            nextQuestion();
+        });
+        
+        // 加载页面时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAnswers();
+            showQuestion();
+            
+            // 创建心形粒子效果
+            const heartContainer = document.getElementById('heartParticles');
+            const heartSymbols = ['♥', '❤', '💕', '💖', '💗'];
+            
+            // 每隔一段时间创建新的心形
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    createHeart();
+                }
+            }, 1000);
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // 随机位置
+                heart.style.left = Math.random() * 100 + '%';
+                
+                // 随机大小
+                const size = Math.random() * 15 + 8;
+                heart.style.fontSize = size + 'px';
+                
+                // 随机颜色
+                const colors = ['#ff69b4', '#ff1493', '#ee82ee', '#da70d6', '#c71585'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机动画时长
+                const duration = Math.random() * 3 + 4;
+                heart.style.animationDuration = duration + 's';
+                
+                heartContainer.appendChild(heart);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+        });
+    </script>
+</body>
+</html> 

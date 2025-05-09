@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Personality Test - Processing Results</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MBTI Personality Test</h1>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: 90%"></div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="processing-section">
+                <h2>Analyzing your responses...</h2>
+                
+                <div class="processing-animation">
+                    <div class="brain-animation">
+                        <svg viewBox="0 0 200 200" width="150" height="150">
+                            <path class="brain-path" d="M100,20 C120,10 150,10 170,30 C190,50 190,80 170,100 C190,120 190,150 170,170 C150,190 120,190 100,180 C80,190 50,190 30,170 C10,150 10,120 30,100 C10,80 10,50 30,30 C50,10 80,10 100,20 Z" />
+                            <path class="brain-path brain-path-inner" d="M100,40 C115,30 135,30 150,45 C165,60 165,80 150,95 C165,110 165,130 150,145 C135,160 115,160 100,150 C85,160 65,160 50,145 C35,130 35,110 50,95 C35,80 35,60 50,45 C65,30 85,30 100,40 Z" />
+                        </svg>
+                        <div class="brain-pulses">
+                            <span class="pulse pulse-1"></span>
+                            <span class="pulse pulse-2"></span>
+                            <span class="pulse pulse-3"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="analysis-text">
+                        <div class="processing-steps">
+                            <div class="step" id="step1">
+                                <span class="check-icon">✓</span> Collecting all responses
+                            </div>
+                            <div class="step" id="step2">
+                                <span class="check-icon"></span> Analyzing personality dimensions
+                            </div>
+                            <div class="step" id="step3">
+                                <span class="check-icon"></span> Determining MBTI type
+                            </div>
+                            <div class="step" id="step4">
+                                <span class="check-icon"></span> Generating personality report
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="processing-progress">
+                    <div class="loading-bar">
+                        <div class="loading-progress" id="loadingProgress"></div>
+                    </div>
+                    <div class="percentage" id="percentageText">0%</div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2024 MBTI Personality Test | Design & Development</p>
+        </footer>
+    </div>
+
+    <script src="js/processing.js"></script>
+</body>
+</html> 

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Personality Test - Questions</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MBTI Personality Test</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="progress-text">
+                Question <span id="currentQuestion">1</span> / <span id="totalQuestions">20</span>
+            </div>
+        </header>
+        
+        <main>
+            <section class="question-section">
+                <div id="questionContainer">
+                    <!-- Question content will be dynamically loaded by JavaScript -->
+                    <h2 id="questionText">Loading question...</h2>
+                    
+                    <div class="options-container">
+                        <div class="option-row">
+                            <label class="option-label">
+                                <input type="radio" name="answer" value="A" class="option-input">
+                                <span class="option-text" id="optionA">Option A</span>
+                            </label>
+                        </div>
+                        <div class="option-row">
+                            <label class="option-label">
+                                <input type="radio" name="answer" value="B" class="option-input">
+                                <span class="option-text" id="optionB">Option B</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="prevButton" class="button secondary-button">Previous</button>
+                    <button id="nextButton" class="button primary-button">Next</button>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2024 MBTI Personality Test | Design & Development</p>
+        </footer>
+    </div>
+
+    <script src="js/questions.js"></script>
+</body>
+</html> 

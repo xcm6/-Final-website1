@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI Personality Test - Results</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MBTI Personality Test</h1>
+            <div class="progress-container">
+                <div class="progress-bar" style="width: 100%"></div>
+            </div>
+        </header>
+        
+        <main>
+            <section class="results-section">
+                <h2>Your MBTI Personality Type</h2>
+                
+                <div class="result-card">
+                    <div class="result-header">
+                        <div class="result-type" id="resultType">XXXX</div>
+                        <div class="result-name" id="resultName">Type Name</div>
+                    </div>
+                    
+                    <div class="result-description" id="resultDescription">
+                        <!-- Result description will be dynamically loaded by JavaScript -->
+                        Loading...
+                    </div>
+                    
+                    <div class="dimensions-result">
+                        <h3>Your Dimension Scores</h3>
+                        
+                        <div class="dimension-bar">
+                            <div class="dimension-label">Extraversion (E)</div>
+                            <div class="dimension-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="E-I-bar"></div>
+                                </div>
+                            </div>
+                            <div class="dimension-label">Introversion (I)</div>
+                            <div class="dimension-percentage">
+                                <span id="E-percentage">50%</span> | <span id="I-percentage">50%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dimension-bar">
+                            <div class="dimension-label">Sensing (S)</div>
+                            <div class="dimension-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="S-N-bar"></div>
+                                </div>
+                            </div>
+                            <div class="dimension-label">Intuition (N)</div>
+                            <div class="dimension-percentage">
+                                <span id="S-percentage">50%</span> | <span id="N-percentage">50%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dimension-bar">
+                            <div class="dimension-label">Thinking (T)</div>
+                            <div class="dimension-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="T-F-bar"></div>
+                                </div>
+                            </div>
+                            <div class="dimension-label">Feeling (F)</div>
+                            <div class="dimension-percentage">
+                                <span id="T-percentage">50%</span> | <span id="F-percentage">50%</span>
+                            </div>
+                        </div>
+                        
+                        <div class="dimension-bar">
+                            <div class="dimension-label">Judging (J)</div>
+                            <div class="dimension-progress">
+                                <div class="progress-track">
+                                    <div class="progress-fill" id="J-P-bar"></div>
+                                </div>
+                            </div>
+                            <div class="dimension-label">Perceiving (P)</div>
+                            <div class="dimension-percentage">
+                                <span id="J-percentage">50%</span> | <span id="P-percentage">50%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-details">
+                    <h3>Your Personality Traits</h3>
+                    <div class="traits-container" id="personalityTraits">
+                        <!-- Personality traits will be dynamically loaded by JavaScript -->
+                    </div>
+                    
+                    <h3>Suitable Career Paths</h3>
+                    <div class="careers-container" id="careerPaths">
+                        <!-- Career paths will be dynamically loaded by JavaScript -->
+                    </div>
+                    
+                    <h3>Personal Growth Suggestions</h3>
+                    <div class="advice-container" id="growthAdvice">
+                        <!-- Growth advice will be dynamically loaded by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="retakeTest" class="button secondary-button">Retake Test</button>
+                    <a href="../assignment4.html" class="button primary-button">Return Home</a>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>© 2024 MBTI Personality Test | Design & Development</p>
+        </footer>
+    </div>
+
+    <script src="js/results.js"></script>
+</body>
+</html> 

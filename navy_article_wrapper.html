@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navy Article Wrapper</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+        }
+        
+        .wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+        }
+        
+        iframe {
+            width: 640px;
+            height: 480px;
+            border: none;
+            background: #ffffff;
+            z-index: 1;
+            /* 放大版本 */
+            transform: scale(1.25);
+        }
+        
+        /* 白色风格装饰元素 */
+        .white-style-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .white-border {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 15px solid #ffffff;
+            box-shadow: inset 0 0 40px rgba(255,255,255,0.8);
+        }
+        
+        /* 四个角的白色装饰 */
+        .corner {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #ffffff;
+        }
+        
+        .top-left {
+            top: 0;
+            left: 0;
+        }
+        
+        .top-right {
+            top: 0;
+            right: 0;
+        }
+        
+        .bottom-left {
+            bottom: 0;
+            left: 0;
+        }
+        
+        .bottom-right {
+            bottom: 0;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <iframe src="Experimental Camera/Navy_article_2025_05_09_02_20_26/index.html" frameborder="0" scrolling="no" allowfullscreen></iframe>
+        
+        <div class="white-style-container">
+            <div class="white-border"></div>
+            <div class="corner top-left"></div>
+            <div class="corner top-right"></div>
+            <div class="corner bottom-left"></div>
+            <div class="corner bottom-right"></div>
+        </div>
+    </div>
+</body>
+</html> 

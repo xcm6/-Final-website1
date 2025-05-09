@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>White E-Girl Style Wrapper</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .hearts-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.7;
+            animation: float 5s linear forwards;
+        }
+        
+        @keyframes float {
+            0% { opacity: 0; transform: translateY(100%) rotate(0deg); }
+            10% { opacity: 0.7; }
+            90% { opacity: 0.7; }
+            100% { opacity: 0; transform: translateY(0) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <iframe src="Experimental Camera/Navy_article_2025_05_09_02_20_26/index.html"></iframe>
+    <div class="hearts-overlay" id="heartsContainer"></div>
+    
+    <script>
+        // 创建漂浮的心形
+        document.addEventListener('DOMContentLoaded', function() {
+            const heartsContainer = document.getElementById('heartsContainer');
+            const heartSymbols = ['♥', '❤', '💕', '💖', '💗'];
+            
+            // 每隔一定时间创建一个新的心形
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // 随机位置
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.bottom = '0';
+                
+                // 随机大小
+                const size = Math.random() * 20 + 10;
+                heart.style.fontSize = size + 'px';
+                
+                // 黑色系列颜色
+                const colors = ['#ff69b4', '#ff1493', '#ee82ee', '#da70d6', '#c71585'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机动画时长
+                const duration = Math.random() * 3 + 3;
+                heart.style.animationDuration = duration + 's';
+                
+                heartsContainer.appendChild(heart);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }, 300);
+        });
+    </script>
+</body>
+</html> 

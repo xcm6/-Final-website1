@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Protest+Guerrilla&display=swap');
+
+:root {
+    --main-red: #E32527;
+    --main-black: #000000;
+    --main-white: #FFFFFF;
+    --main-font: 'Protest Guerrilla', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--main-font);
+    background-color: var(--main-red);
+    color: var(--main-white);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+} 

@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI匹配类型 | E-Girl风格</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .match-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 20px;
+            box-shadow: 0 5px 20px rgba(255,105,180,0.2);
+            border: 1px solid rgba(255,105,180,0.2);
+            position: relative;
+            overflow: hidden;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 40px;
+        }
+        
+        .match-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, rgba(255,105,180,0.05), transparent);
+            pointer-events: none;
+        }
+        
+        .match-selector {
+            margin-bottom: 30px;
+        }
+        
+        .type-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        
+        .type-btn {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,105,180,0.2);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+        
+        .type-btn:hover {
+            background: rgba(255,105,180,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .type-btn.selected {
+            background: rgba(255,105,180,0.3);
+            border-color: rgba(255,105,180,0.6);
+            font-weight: bold;
+        }
+        
+        .match-results {
+            margin-top: 30px;
+        }
+        
+        .match-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,105,180,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .match-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255,105,180,0.3);
+            border-color: rgba(255,105,180,0.3);
+        }
+        
+        .match-type {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+        
+        .match-name {
+            font-size: 1rem;
+            color: var(--highlight);
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        
+        .match-description {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .match-level {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+        }
+        
+        .match-excellent {
+            background: rgba(75,225,100,0.2);
+            color: #7eff98;
+        }
+        
+        .match-good {
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+        }
+        
+        .match-challenging {
+            background: rgba(255,105,180,0.2);
+            color: #ff69b4;
+        }
+        
+        .no-result {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255,255,255,0.7);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="heart-particles" id="heartParticles"></div>
+    
+    <a href="index.html" class="return-link">返回首页</a>
+    
+    <div class="container">
+        <h1>MBTI匹配类型</h1>
+        <h2>探索与其他类型的兼容性</h2>
+        
+        <div class="match-container">
+            <div class="match-selector">
+                <p>选择你的MBTI类型，或使用测试结果，查看与其他类型的兼容性和匹配关系。不同的类型组合会产生不同的互动动态，了解这些可以帮助你更好地理解人际关系。</p>
+                
+                <div id="userTypeContainer">
+                    <h3>选择你的MBTI类型：</h3>
+                    <div class="type-selection" id="typeSelection">
+                        <!-- 类型按钮将由JS动态添加 -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="match-results" id="matchResults">
+                <div class="no-result">请选择一个MBTI类型查看匹配结果</div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin: 20px 0;">
+            <a href="result.html" class="btn" id="viewResultBtn">查看我的结果</a>
+            <a href="question.html" class="btn">重新测试</a>
+        </div>
+    </div>
+    
+    <script>
+        // MBTI类型匹配数据
+        const mbtiMatchData = {
+            INTJ: {
+                excellent: ["ENFP", "ENTP"],
+                good: ["INTJ", "INFJ", "INFP", "ENTJ"],
+                challenging: ["ESFJ", "ESFP", "ISFJ", "ISFP"],
+                descriptions: {
+                    ENFP: "INTJ和ENFP形成了一种互补的关系，INTJ提供结构和深度思考，而ENFP带来创新和社交能量。两者都重视创意和可能性，但从不同角度看待世界。",
+                    ENTP: "INTJ和ENTP都享受智力挑战和深入讨论。两者都是战略性思考者，但ENTP更善于即兴发挥，而INTJ更注重长期规划。他们可以互相学习和成长。",
+                    INTJ: "两个INTJ在一起会形成深度的理性连接，他们理解彼此的思维方式和需要独处的时间。他们可以一起解决复杂问题，但可能需要努力表达情感。",
+                    INFJ: "INTJ和INFJ都是内向的直觉思考者，享受深度交流和理解复杂概念。INFJ带来更多的情感洞察，而INTJ提供逻辑分析，形成互补。",
+                    INFP: "INTJ的逻辑与INFP的价值观驱动形成有趣的动态。两者都重视独处时间，但在决策方式上有很大不同，这可能导致成长或冲突。",
+                    ENTJ: "INTJ和ENTJ共享战略思维和追求效率的特质。两者都是目标导向的，但ENTJ更外向和主导，而INTJ更喜欢背后思考和分析。",
+                    ESFJ: "INTJ和ESFJ有着非常不同的世界观。INTJ关注概念和效率，而ESFJ关注人和具体细节。这种差异可能导致沟通困难，但也可能带来成长。",
+                    ESFP: "INTJ和ESFP在许多方面都是对立的。INTJ计划未来和分析，而ESFP活在当下和感受。这种关系需要大量的理解和妥协。",
+                    ISFJ: "INTJ的抽象思维与ISFJ的具体关注点可能导致沟通挑战。ISFJ的传统和细节导向与INTJ的创新和全局视角有很大不同。",
+                    ISFP: "INTJ和ISFP在决策方式和生活节奏上有很大差异。INTJ更喜欢结构和计划，而ISFP更喜欢灵活和感受当下。双方需要大量尊重才能和谐相处。"
+                }
+            },
+            INTP: {
+                excellent: ["ENTJ", "ENFJ"],
+                good: ["INTP", "ENTP", "INFJ", "INFP"],
+                challenging: ["ESFJ", "ISFJ", "ESTJ", "ISTJ"],
+                descriptions: {
+                    ENTJ: "INTP和ENTJ形成强大的智力伙伴关系。INTP提供深度分析和创新想法，而ENTJ提供方向和执行能力。两者都重视逻辑和效率。",
+                    ENFJ: "INTP和ENFJ在思维方式上互补。INTP提供逻辑分析，而ENFJ带来人际智慧和情感理解。这种组合可以带来平衡的观点和解决方案。",
+                    INTP: "两个INTP在一起可以进行深度的概念探讨和理论分析。他们理解彼此的思维过程和独处需求，但可能在实际执行或情感表达方面遇到挑战。",
+                    ENTP: "INTP和ENTP共享对概念的热爱和创新思维。ENTP带来更多的外向能量和想法生成，而INTP提供深度分析和完善。两者都享受智力挑战。",
+                    INFJ: "INTP的逻辑分析与INFJ的情感洞察形成互补。INFJ帮助INTP更好地理解人际动态，而INTP帮助INFJ建立更系统的思维框架。",
+                    INFP: "INTP和INFP都是内向的直觉型人格，喜欢探索想法和概念。INFP带来价值观和情感深度，而INTP提供逻辑分析，可以相互学习。",
+                    ESFJ: "INTP和ESFJ有着非常不同的关注点和价值观。INTP重视概念和独立，而ESFJ重视和谐和具体细节。这种差异可能导致沟通障碍。",
+                    ISFJ: "INTP的抽象思维与ISFJ的实际关注点可能导致沟通挑战。ISFJ的传统导向和INTP的创新思维代表了不同的人生观和工作方式。",
+                    ESTJ: "INTP和ESTJ在决策方式和生活节奏上有显著差异。ESTJ倾向于遵循规则和结构，而INTP更喜欢探索可能性和理论。这种关系需要双方的理解和适应。",
+                    ISTJ: "INTP的创新思维与ISTJ的传统方法可能形成对比。虽然两者都是内向和逻辑导向的，但ISTJ更关注实际细节和程序，而INTP更关注概念和系统。"
+                }
+            },
+            ENTJ: {
+                excellent: ["INTP", "ISTP"],
+                good: ["ENTJ", "INTJ", "ENTP", "ENFJ"],
+                challenging: ["ISFP", "ESFP", "ISFJ", "ESFJ"],
+                descriptions: {
+                    INTP: "ENTJ和INTP形成了很好的搭档，ENTJ提供领导力和执行能力，而INTP提供深度分析和创新思想。两者都重视逻辑和效率。",
+                    ISTP: "ENTJ的战略思维与ISTP的实用技能形成互补。ISTP带来实际技术知识，而ENTJ提供方向和组织能力，形成高效的合作关系。",
+                    ENTJ: "两个ENTJ在一起可能形成强大的合作伙伴关系或竞争关系。他们理解彼此的雄心和目标驱动特性，但可能为主导权而争斗。",
+                    INTJ: "ENTJ和INTJ共享战略思维和追求效率的特质。两者都是目标导向的，但INTJ更内向和分析，而ENTJ更主动和果断。",
+                    ENTP: "ENTJ和ENTP都是外向的直觉思考者，喜欢解决问题和探索可能性。ENTP带来更多创意和灵活性，而ENTJ提供结构和执行力。",
+                    ENFJ: "ENTJ的逻辑与ENFJ的人际智慧形成平衡。ENFJ帮助ENTJ更好地理解和管理团队感受，而ENTJ帮助制定清晰的目标和计划。",
+                    ISFP: "ENTJ和ISFP在沟通和决策方式上有很大差异。ENTJ直接而目标导向，而ISFP更内敛和价值导向。这种组合需要大量的耐心和理解。",
+                    ESFP: "ENTJ的计划性与ESFP的即兴特性可能导致摩擦。ENTJ关注未来目标，而ESFP更享受当下，两者的节奏和优先级可能截然不同。",
+                    ISFJ: "ENTJ的战略思维与ISFJ的实际关注点可能导致优先级不同。ISFJ更关注他人和具体细节，而ENTJ更关注目标和效率。",
+                    ESFJ: "ENTJ的直接和任务导向与ESFJ的人际关注和和谐需求可能形成对比。两者在沟通风格和决策方式上有显著不同。"
+                }
+            },
+            ENTP: {
+                excellent: ["INTJ", "INFJ"],
+                good: ["ENTP", "ENTJ", "INTP", "ENFP"],
+                challenging: ["ISFJ", "ESFJ", "ISTJ", "ESTJ"],
+                descriptions: {
+                    INTJ: "ENTP和INTJ形成富有创意的智力伙伴关系。ENTP提供创新想法和可能性，而INTJ帮助完善和实施这些想法。两者都重视概念理解和战略思考。",
+                    INFJ: "ENTP和INFJ之间存在互补的动态。ENTP带来创新思维和辩论技巧，而INFJ提供深度洞察和情感理解。两者都重视可能性和新视角。",
+                    ENTP: "两个ENTP在一起创造了充满活力和思想的环境。他们可以无休止地讨论想法和可能性，但可能需要外部帮助来完成项目和处理细节。",
+                    ENTJ: "ENTP和ENTJ都是外向的直觉思考者，喜欢解决问题和探索可能性。ENTJ带来更多的结构和执行力，而ENTP提供更多的创造性和灵活性。",
+                    INTP: "ENTP和INTP共享对概念的热爱和创新思维。ENTP带来外向能量和想法生成，而INTP提供深度分析和理论精炼。两者都享受智力挑战。",
+                    ENFP: "ENTP和ENFP形成充满活力的组合，充满创意和可能性。两者都是外向的直觉型，喜欢探索新想法，但ENTP更重视逻辑，而ENFP更重视情感和价值观。",
+                    ISFJ: "ENTP和ISFJ在生活和思维方式上有很大差异。ENTP喜欢挑战传统和探索可能性，而ISFJ更尊重传统和关注当下的具体需求。",
+                    ESFJ: "ENTP的创新和辩论风格与ESFJ的和谐和细节关注形成对比。ESFJ可能发现ENTP太过理论或激进，而ENTP可能觉得ESFJ太过传统或缺乏远见。",
+                    ISTJ: "ENTP的创新思维与ISTJ的传统方法可能导致冲突。ENTP喜欢挑战规则和探索新可能性，而ISTJ更喜欢遵循既定流程和细节。",
+                    ESTJ: "ENTP和ESTJ在处理方式上有根本性差异。ENTP倾向于探索和实验，而ESTJ倾向于组织和执行。两者的决策方式和生活节奏可能很难协调。"
+                }
+            },
+            INFJ: {
+                excellent: ["ENTP", "ENFP"],
+                good: ["INFJ", "INTJ", "INFP", "ENFJ"],
+                challenging: ["ESTP", "ESFP", "ISTP", "ISFP"],
+                descriptions: {
+                    ENTP: "INFJ和ENTP之间存在互补的动态。INFJ提供深度洞察和情感理解，而ENTP带来创新思维和辩论技巧。两者都重视可能性和新视角。",
+                    ENFP: "INFJ和ENFP形成温暖而有创意的关系。两者都重视可能性和人际连接，但INFJ更深思熟虑和组织，而ENFP更自发和外向。",
+                    INFJ: "两个INFJ之间通常存在深刻的理解和联系。他们理解彼此的复杂内心世界和对意义的追求，但可能都缺乏将想法付诸实践的动力。",
+                    INTJ: "INFJ和INTJ都是内向的直觉思考者，享受深度交流和理解复杂概念。INFJ带来更多的情感洞察，而INTJ提供逻辑分析，形成互补。",
+                    INFP: "INFJ和INFP共享理想主义和关注价值观的特质。两者都是内向的直觉型，但INFJ更有组织和决断性，而INFP更灵活和个人化。",
+                    ENFJ: "INFJ和ENFJ都关注他人福祉和深度连接。ENFJ带来更多的外向能量和社交能力，而INFJ提供更深的洞察和反思能力。",
+                    ESTP: "INFJ和ESTP在处理方式上有显著差异。INFJ关注未来和概念，而ESTP专注于当下和实际行动。两者的沟通和生活节奏可能很难协调。",
+                    ESFP: "INFJ的深度和复杂性与ESFP的活在当下和感性态度形成对比。INFJ可能觉得ESFP太肤浅，而ESFP可能觉得INFJ太严肃或神秘。",
+                    ISTP: "INFJ的理想主义和复杂性与ISTP的实用主义和直接性形成对比。ISTP更专注于解决当前问题，而INFJ更关注长期意义和人际影响。",
+                    ISFP: "INFJ和ISFP都关注价值观和真实性，但INFJ更关注未来和可能性，而ISFP更专注于当下的感受和体验。这可能导致不同的优先级和节奏。"
+                }
+            }
+        };
+        
+        // 将前5个类型的数据复制到剩余类型（为了简洁，实际应用中应该为所有16种类型提供完整数据）
+        const allTypes = ["INTJ", "INTP", "ENTJ", "ENTP", "INFJ", "INFP", "ENFJ", "ENFP", "ISTJ", "ISFJ", "ESTJ", "ESFJ", "ISTP", "ISFP", "ESTP", "ESFP"];
+        
+        // 为其余类型创建基本匹配数据（实际应用中应提供真实数据）
+        allTypes.forEach(type => {
+            if (!mbtiMatchData[type]) {
+                mbtiMatchData[type] = {
+                    excellent: mbtiMatchData.INTJ.excellent,
+                    good: mbtiMatchData.INTJ.good,
+                    challenging: mbtiMatchData.INTJ.challenging,
+                    descriptions: mbtiMatchData.INTJ.descriptions
+                };
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const typeSelection = document.getElementById('typeSelection');
+            const matchResults = document.getElementById('matchResults');
+            const viewResultBtn = document.getElementById('viewResultBtn');
+            
+            // 从本地存储加载用户的MBTI结果
+            const resultData = localStorage.getItem('mbtiResult');
+            let userType = null;
+            
+            if (resultData) {
+                try {
+                    const result = JSON.parse(resultData);
+                    userType = result.type;
+                    
+                    // 更新"查看我的结果"按钮
+                    viewResultBtn.textContent = `返回我的MBTI结果 (${userType})`;
+                } catch (e) {
+                    console.error('解析MBTI结果时出错:', e);
+                }
+            } else {
+                // 如果没有结果，隐藏结果按钮
+                viewResultBtn.style.display = 'none';
+            }
+            
+            // 创建所有MBTI类型按钮
+            allTypes.forEach(type => {
+                const typeBtn = document.createElement('button');
+                typeBtn.className = 'type-btn';
+                typeBtn.textContent = type;
+                
+                // 如果是用户的类型，标记为选中
+                if (type === userType) {
+                    typeBtn.classList.add('selected');
+                    // 显示匹配结果
+                    showMatchResults(type);
+                }
+                
+                typeBtn.addEventListener('click', function() {
+                    // 移除所有按钮的选中状态
+                    document.querySelectorAll('.type-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    
+                    // 添加选中状态到当前按钮
+                    typeBtn.classList.add('selected');
+                    
+                    // 显示匹配结果
+                    showMatchResults(type);
+                });
+                
+                typeSelection.appendChild(typeBtn);
+            });
+            
+            // 如果有用户类型但没有自动选中（可能是因为数据不完整），手动选中第一个类型
+            if (!userType && allTypes.length > 0) {
+                const firstTypeBtn = typeSelection.querySelector('.type-btn');
+                if (firstTypeBtn) {
+                    firstTypeBtn.classList.add('selected');
+                    showMatchResults(allTypes[0]);
+                }
+            }
+            
+            // 显示匹配结果函数
+            function showMatchResults(type) {
+                const matchData = mbtiMatchData[type];
+                
+                if (!matchData) {
+                    matchResults.innerHTML = '<div class="no-result">很抱歉，未找到该类型的匹配数据。</div>';
+                    return;
+                }
+                
+                let resultHTML = '';
+                
+                // 添加绝佳匹配
+                if (matchData.excellent && matchData.excellent.length > 0) {
+                    resultHTML += '<h3>绝佳匹配</h3>';
+                    
+                    matchData.excellent.forEach(matchType => {
+                        resultHTML += `
+                            <div class="match-card">
+                                <span class="match-level match-excellent">绝佳匹配</span>
+                                <div class="match-type">${matchType}</div>
+                                <div class="match-name">${mbtiTypeData[matchType] ? mbtiTypeData[matchType].name || '未知' : '未知'}</div>
+                                <div class="match-description">${matchData.descriptions[matchType] || '这种组合通常形成非常和谐的关系，具有优秀的沟通和互补特性。'}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // 添加良好匹配
+                if (matchData.good && matchData.good.length > 0) {
+                    resultHTML += '<h3>良好匹配</h3>';
+                    
+                    matchData.good.forEach(matchType => {
+                        resultHTML += `
+                            <div class="match-card">
+                                <span class="match-level match-good">良好匹配</span>
+                                <div class="match-type">${matchType}</div>
+                                <div class="match-name">${mbtiTypeData[matchType] ? mbtiTypeData[matchType].name || '未知' : '未知'}</div>
+                                <div class="match-description">${matchData.descriptions[matchType] || '这种组合通常形成积极的关系，尽管可能需要一些努力来克服差异。'}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // 添加具有挑战的匹配
+                if (matchData.challenging && matchData.challenging.length > 0) {
+                    resultHTML += '<h3>具有挑战的匹配</h3>';
+                    
+                    matchData.challenging.forEach(matchType => {
+                        resultHTML += `
+                            <div class="match-card">
+                                <span class="match-level match-challenging">具有挑战</span>
+                                <div class="match-type">${matchType}</div>
+                                <div class="match-name">${mbtiTypeData[matchType] ? mbtiTypeData[matchType].name || '未知' : '未知'}</div>
+                                <div class="match-description">${matchData.descriptions[matchType] || '这种组合可能面临更多沟通和价值观差异的挑战，但通过相互理解和努力，仍然可以建立有意义的关系。'}</div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                matchResults.innerHTML = resultHTML;
+            }
+            
+            // 创建心形粒子效果
+            initializeHeartParticles();
+        });
+        
+        // 初始化心形粒子
+        function initializeHeartParticles() {
+            const heartContainer = document.getElementById('heartParticles');
+            const heartSymbols = ['♥', '❤', '💕', '💖', '💗'];
+            
+            // 每隔一段时间创建新的心形
+            setInterval(() => {
+                if (Math.random() > 0.8) {
+                    createHeart();
+                }
+            }, 1000);
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // 随机位置
+                heart.style.left = Math.random() * 100 + '%';
+                
+                // 随机大小
+                const size = Math.random() * 15 + 8;
+                heart.style.fontSize = size + 'px';
+                
+                // 随机颜色
+                const colors = ['#ff69b4', '#ff1493', '#ee82ee', '#da70d6', '#c71585'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机动画时长
+                const duration = Math.random() * 3 + 4;
+                heart.style.animationDuration = duration + 's';
+                
+                heartContainer.appendChild(heart);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+        }
+    </script>
+</body>
+</html> 

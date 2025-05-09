@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRAIN.SCAN | ABOUT</title>
+    <link rel="stylesheet" href="css/globals.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #ff0000;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 基本容器 */
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 1fr;
+            grid-template-rows: 1fr;
+        }
+
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInNav 0.8s ease-out forwards 0.5s;
+        }
+
+        .nav-decoration {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            z-index: -1;
+            opacity: 0;
+            animation: decorationFadeIn 1s forwards 0.7s;
+        }
+
+        @keyframes fadeInNav {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes decorationFadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        nav a:hover::before {
+            opacity: 1;
+        }
+
+        /* 背景噪点 */
+        .noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,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');
+            opacity: 0.05;
+            mix-blend-mode: overlay;
+        }
+
+        /* 大脑扫描效果 */
+        .brain-scan {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80vh;
+            height: 80vh;
+            max-width: 90vw;
+            max-height: 90vw;
+            border-radius: 50%;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(255, 0, 0, 0.3);
+        }
+
+        .scan-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.4);
+            top: 50%;
+            animation: scanAnimation 4s cubic-bezier(0.36, 0, 0.66, 1) infinite alternate;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .neural-nodes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .neural-node {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .neural-connection {
+            position: absolute;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.2);
+            transform-origin: left center;
+        }
+
+        /* 脑波振荡 */
+        .brain-wave {
+            position: absolute;
+            bottom: 20%;
+            left: 10%;
+            width: 80%;
+            height: 40px;
+        }
+
+        .wave-path {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .wave-line {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1) 30%, rgba(255, 255, 255, 0.4) 50%, rgba(255, 255, 255, 0.1) 70%, transparent);
+            transform-origin: center;
+            animation: waveAnimation 3s linear infinite;
+        }
+
+        /* 精神分析文本 */
+        .psych-text {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.6);
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .psych-text1 {
+            top: 20%;
+            left: 15%;
+            animation: flickerText 4s infinite;
+        }
+
+        .psych-text2 {
+            bottom: 25%;
+            right: 15%;
+            animation: flickerText 3s infinite 1s;
+        }
+
+        .psych-text3 {
+            top: 40%;
+            right: 20%;
+            animation: flickerText 5s infinite 2s;
+        }
+
+        /* 中心标题 */
+        .center-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5vw;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .center-subtitle {
+            position: absolute;
+            top: calc(50% + 5vw);
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1vw;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            z-index: 10;
+        }
+
+        /* 圆形扫描器 */
+        .circle-scanner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vh;
+            height: 60vh;
+            max-width: 70vw;
+            max-height: 70vw;
+            border-radius: 50%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            animation: pulseCircle 4s infinite;
+        }
+
+        .circle-scanner::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            animation: pulseCircle 4s infinite 1s;
+        }
+
+        .circle-scanner::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            border-radius: 50%;
+            animation: pulseCircle 4s infinite 2s;
+        }
+
+        /* 标记点 */
+        .marker {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+        }
+
+        .marker::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            animation: markerPulse 2s infinite;
+        }
+
+        .marker-label {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            white-space: nowrap;
+            transform: translateY(-15px);
+        }
+
+        /* 动画 */
+        @keyframes scanAnimation {
+            0% { transform: translateY(-100%); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0; }
+        }
+
+        @keyframes waveAnimation {
+            0% { clip-path: polygon(0 100%, 5% 90%, 10% 70%, 15% 60%, 20% 40%, 25% 30%, 30% 40%, 35% 60%, 40% 80%, 45% 90%, 50% 80%, 55% 50%, 60% 20%, 65% 10%, 70% 30%, 75% 50%, 80% 70%, 85% 80%, 90% 70%, 95% 50%, 100% 30%, 100% 100%, 0 100%); }
+            50% { clip-path: polygon(0 100%, 5% 70%, 10% 50%, 15% 40%, 20% 30%, 25% 40%, 30% 60%, 35% 80%, 40% 90%, 45% 80%, 50% 60%, 55% 40%, 60% 30%, 65% 40%, 70% 60%, 75% 80%, 80% 90%, 85% 70%, 90% 40%, 95% 20%, 100% 30%, 100% 100%, 0 100%); }
+            100% { clip-path: polygon(0 100%, 5% 90%, 10% 70%, 15% 60%, 20% 40%, 25% 30%, 30% 40%, 35% 60%, 40% 80%, 45% 90%, 50% 80%, 55% 50%, 60% 20%, 65% 10%, 70% 30%, 75% 50%, 80% 70%, 85% 80%, 90% 70%, 95% 50%, 100% 30%, 100% 100%, 0 100%); }
+        }
+
+        @keyframes flickerText {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.2; }
+        }
+
+        @keyframes pulseCircle {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.2; }
+            50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.4; }
+        }
+
+        @keyframes markerPulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.1; }
+        }
+
+        /* 数据显示元素 */
+        .data-readout {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            backdrop-filter: blur(2px);
+        }
+
+        .data-readout-1 {
+            top: 20%;
+            right: 5%;
+            width: 150px;
+        }
+
+        .data-readout-2 {
+            bottom: 20%;
+            left: 5%;
+            width: 180px;
+        }
+
+        .data-value {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .data-title {
+            color: rgba(255, 0, 0, 0.7);
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        /* 脉冲效果 */
+        .pulse-effect {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255,0,0,0.1) 0%, rgba(255,0,0,0) 70%);
+            animation: pulsate 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .pulse-1 {
+            top: 30%;
+            left: 20%;
+            animation-delay: 0.5s;
+        }
+
+        .pulse-2 {
+            bottom: 30%;
+            right: 20%;
+            animation-delay: 1.5s;
+        }
+
+        @keyframes pulsate {
+            0%, 100% { transform: scale(1); opacity: 0.3; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+        }
+
+        /* 静态噪声层 */
+        .static-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,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');
+            pointer-events: none;
+            opacity: 0.03;
+            mix-blend-mode: screen;
+            z-index: 50;
+        }
+
+        /* 十字准星 */
+        .crosshair {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            pointer-events: none;
+        }
+
+        .crosshair::before,
+        .crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .crosshair::before {
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+        }
+
+        .crosshair::after {
+            left: 50%;
+            top: 0;
+            width: 1px;
+            height: 100%;
+        }
+
+        .crosshair-1 {
+            top: 30%;
+            left: 30%;
+        }
+
+        .crosshair-2 {
+            bottom: 35%;
+            right: 25%;
+        }
+
+        /* 坐标网格 */
+        .coordinate-grid {
+            position: absolute;
+            bottom: 10%;
+            right: 10%;
+            width: 150px;
+            height: 150px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .grid-line-h {
+            width: 100%;
+            height: 1px;
+        }
+
+        .grid-line-v {
+            height: 100%;
+            width: 1px;
+        }
+
+        .grid-dot {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: gridDotPulse 4s infinite;
+        }
+
+        @keyframes gridDotPulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(2); opacity: 0.8; }
+        }
+
+        /* 图像干扰效果 */
+        .glitch-filter {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.1;
+            mix-blend-mode: overlay;
+            z-index: 20;
+        }
+        
+        .glitch-filter::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(255,0,0,0.1) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(255,0,0,0.1) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: glitchBg 10s linear infinite;
+        }
+        
+        @keyframes glitchBg {
+            0%, 100% { background-position: 0 0; opacity: 0.1; }
+            25% { background-position: 50px 0; opacity: 0.15; }
+            50% { background-position: 0 50px; opacity: 0.1; }
+            75% { background-position: -50px 0; opacity: 0.05; }
+        }
+
+        /* 浮动数字 */
+        .floating-numbers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .floating-number {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 12px;
+            opacity: 0;
+            animation: floatNumber 10s linear forwards;
+        }
+
+        @keyframes floatNumber {
+            0% { opacity: 0; transform: translate(0, 0); }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { opacity: 0; transform: translate(var(--move-x), var(--move-y)); }
+        }
+
+        /* 修改导航栏样式 */
+        nav {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInNav 0.8s ease-out forwards 0.5s;
+        }
+
+        .nav-decoration {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            z-index: -1;
+            opacity: 0;
+            animation: decorationFadeIn 1s forwards 0.7s;
+        }
+
+        @keyframes fadeInNav {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes decorationFadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ffffff;
+        }
+
+        nav a:hover::before {
+            opacity: 1;
+        }
+
+        .interface-elements {
+            position: absolute;
+            top: 0;
+            right: 100%;
+            width: 200px;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            animation: fadeInInterface 1s forwards 1s;
+        }
+
+        .interface-line {
+            position: absolute;
+            height: 1px;
+            background: rgba(255, 0, 0, 0.5);
+            right: 0;
+            top: 50%;
+            width: 80px;
+            transform: scaleX(0);
+            transform-origin: right center;
+            animation: lineExtend 0.5s forwards 1.2s;
+        }
+
+        .interface-circle {
+            position: absolute;
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            border-radius: 50%;
+        }
+
+        .interface-data {
+            position: absolute;
+            color: rgba(255, 0, 0, 0.7);
+            font-family: 'Courier New', monospace;
+            font-size: 10px;
+            right: 100px;
+            white-space: nowrap;
+        }
+
+        @keyframes fadeInInterface {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes lineExtend {
+            0% { transform: scaleX(0); }
+            100% { transform: scaleX(1); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="noise"></div>
+        <div class="static-overlay"></div>
+        <div class="glitch-filter"></div>
+        
+        <!-- 修改导航栏结构 -->
+        <nav>
+            <div class="nav-links">
+                <div class="nav-decoration"></div>
+                <a href="index.html" data-text="01">HOME</a>
+                <a href="about.html" data-text="02">ABOUT</a>
+                <a href="new-projects.html" data-text="03">PROJECTS</a>
+                <a href="current-assignment.html" data-text="04">ASSIGNMENT #2</a>
+                <a href="assignment3.html" data-text="05">ASSIGNMENT #3</a>
+                <a href="assignment4.html" data-text="06">ASSIGNMENT #4</a>
+                <a href="final-choice.html" data-text="07">FINAL</a>
+            </div>
+            <div class="interface-elements">
+                <div class="interface-line interface-line-1"></div>
+                <div class="interface-circle" style="top: 30%; right: 20px; width: 30px; height: 30px;"></div>
+                <div class="interface-circle" style="top: 40%; right: 40px; width: 20px; height: 20px;"></div>
+                <div class="interface-data" style="top: 25%; right: 40px;">SYSTEM.NAVIGATION</div>
+                <div class="interface-data" style="top: 35%; right: 60px;">INTERFACE.ACTIVE</div>
+            </div>
+        </nav>
+        
+        <!-- 浮动数字容器 -->
+        <div class="floating-numbers" id="floatingNumbers"></div>
+        
+        <!-- 脉冲效果 -->
+        <div class="pulse-effect pulse-1"></div>
+        <div class="pulse-effect pulse-2"></div>
+        
+        <!-- 十字准星 -->
+        <div class="crosshair crosshair-1"></div>
+        <div class="crosshair crosshair-2"></div>
+        
+        <!-- 大脑扫描容器 -->
+        <div class="brain-scan">
+            <div class="scan-line"></div>
+            <div class="neural-nodes" id="neuralNodes"></div>
+        </div>
+        
+        <!-- 圆形扫描器 -->
+        <div class="circle-scanner"></div>
+        
+        <!-- 标记点 -->
+        <div class="marker" style="top: 35%; left: 40%;">
+            <div class="marker-label">FRONTAL.CORTEX</div>
+        </div>
+        <div class="marker" style="top: 65%; left: 55%;">
+            <div class="marker-label">TEMPORAL.LOBE</div>
+        </div>
+        <div class="marker" style="top: 45%; left: 65%;">
+            <div class="marker-label">OCCIPITAL.REGION</div>
+        </div>
+        
+        <!-- 精神分析文本 -->
+        <div class="psych-text psych-text1">COGNITIVE.DISSONANCE</div>
+        <div class="psych-text psych-text2">ALTERED.STATES</div>
+        <div class="psych-text psych-text3">NEURAL.PATHWAYS</div>
+        
+        <!-- 中心标题 -->
+        <div class="center-title">MIND.SCAN</div>
+        <div class="center-subtitle">PSYCHOANALYTIC INTERFACE</div>
+        
+        <!-- 脑波振荡 -->
+        <div class="brain-wave">
+            <div class="wave-path">
+                <div class="wave-line"></div>
+            </div>
+        </div>
+        
+        <!-- 数据显示 -->
+        <div class="data-readout data-readout-1">
+            <div class="data-title">NEURAL ACTIVITY</div>
+            <div class="data-value">
+                <span>ALPHA WAVES</span>
+                <span>85.7%</span>
+            </div>
+            <div class="data-value">
+                <span>THETA SYNC</span>
+                <span>42.3%</span>
+            </div>
+            <div class="data-value">
+                <span>DELTA FREQ</span>
+                <span>12.9Hz</span>
+            </div>
+        </div>
+        
+        <div class="data-readout data-readout-2">
+            <div class="data-title">MENTAL STATE</div>
+            <div class="data-value">
+                <span>AWARENESS</span>
+                <span>97.2%</span>
+            </div>
+            <div class="data-value">
+                <span>DISSOCIATION</span>
+                <span>68.5%</span>
+            </div>
+            <div class="data-value">
+                <span>EGO DISSOLUTION</span>
+                <span>73.1%</span>
+            </div>
+        </div>
+        
+        <!-- 坐标网格 -->
+        <div class="coordinate-grid" id="coordinateGrid">
+            <!-- 网格线和点将通过JS生成 -->
+        </div>
+    </div>
+
+    <script>
+        // 创建神经节点和连接
+        document.addEventListener('DOMContentLoaded', function() {
+            const nodeContainer = document.getElementById('neuralNodes');
+            const nodeCount = 50;
+            const connectionCount = 60;
+            
+            // 创建节点
+            for (let i = 0; i < nodeCount; i++) {
+                const node = document.createElement('div');
+                node.className = 'neural-node';
+                
+                // 随机位置
+                const top = Math.random() * 100;
+                const left = Math.random() * 100;
+                node.style.top = `${top}%`;
+                node.style.left = `${left}%`;
+                
+                // 随机大小
+                const size = 2 + Math.random() * 3;
+                node.style.width = `${size}px`;
+                node.style.height = `${size}px`;
+                
+                // 随机透明度
+                node.style.opacity = 0.3 + Math.random() * 0.7;
+                
+                nodeContainer.appendChild(node);
+            }
+            
+            // 创建连接
+            const nodes = document.querySelectorAll('.neural-node');
+            
+            for (let i = 0; i < connectionCount; i++) {
+                const connection = document.createElement('div');
+                connection.className = 'neural-connection';
+                
+                // 随机选择两个节点
+                const startNode = nodes[Math.floor(Math.random() * nodes.length)];
+                const endNode = nodes[Math.floor(Math.random() * nodes.length)];
+                
+                // 获取节点位置
+                const startRect = startNode.getBoundingClientRect();
+                const endRect = endNode.getBoundingClientRect();
+                const containerRect = nodeContainer.getBoundingClientRect();
+                
+                const startX = (startRect.left + startRect.width / 2 - containerRect.left) / containerRect.width * 100;
+                const startY = (startRect.top + startRect.height / 2 - containerRect.top) / containerRect.height * 100;
+                const endX = (endRect.left + endRect.width / 2 - containerRect.left) / containerRect.width * 100;
+                const endY = (endRect.top + endRect.height / 2 - containerRect.top) / containerRect.height * 100;
+                
+                // 计算连接线长度和角度
+                const dx = endX - startX;
+                const dy = endY - startY;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                
+                // 设置线的位置和变换
+                connection.style.top = `${startY}%`;
+                connection.style.left = `${startX}%`;
+                connection.style.width = `${length}%`;
+                connection.style.transform = `rotate(${angle}deg)`;
+                
+                // 随机透明度
+                connection.style.opacity = 0.1 + Math.random() * 0.3;
+                
+                nodeContainer.appendChild(connection);
+            }
+            
+            // 创建坐标网格
+            const grid = document.getElementById('coordinateGrid');
+            
+            // 创建横线
+            for (let i = 0; i <= 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line grid-line-h';
+                line.style.top = `${i * 10}%`;
+                grid.appendChild(line);
+            }
+            
+            // 创建竖线
+            for (let i = 0; i <= 10; i++) {
+                const line = document.createElement('div');
+                line.className = 'grid-line grid-line-v';
+                line.style.left = `${i * 10}%`;
+                grid.appendChild(line);
+            }
+            
+            // 创建点
+            for (let i = 0; i < 5; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'grid-dot';
+                dot.style.top = `${20 + Math.random() * 60}%`;
+                dot.style.left = `${20 + Math.random() * 60}%`;
+                dot.style.animationDelay = `${Math.random() * 2}s`;
+                grid.appendChild(dot);
+            }
+            
+            // 创建浮动数字
+            const numbersContainer = document.getElementById('floatingNumbers');
+            const numberCount = 30;
+            
+            // 可能的数字内容
+            const possibleNumbers = [
+                "01011", "10010", "11001", "00101", "10110",
+                "01.25", "10.83", "45.92", "73.16", "29.47",
+                "0x3F", "0xA2", "0xE9", "0x17", "0x8D",
+                "127.0.0.1", "192.168.1.1", "8.8.8.8", "255.255.255.0",
+                "ERR_404", "SYS_32", "MEM_ALLOC", "HEAP_0X", "STACK_01"
+            ];
+            
+            for (let i = 0; i < numberCount; i++) {
+                setTimeout(() => {
+                    // 创建新的浮动数字
+                    const number = document.createElement('div');
+                    number.className = 'floating-number';
+                    
+                    // 随机位置
+                    const top = Math.random() * 90 + 5;
+                    const left = Math.random() * 90 + 5;
+                    number.style.top = `${top}%`;
+                    number.style.left = `${left}%`;
+                    
+                    // 随机移动方向和距离
+                    const moveX = (Math.random() - 0.5) * 200;
+                    const moveY = (Math.random() - 0.5) * 200;
+                    number.style.setProperty('--move-x', `${moveX}px`);
+                    number.style.setProperty('--move-y', `${moveY}px`);
+                    
+                    // 随机内容
+                    number.textContent = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                    
+                    // 随机动画时长
+                    const duration = 5 + Math.random() * 10;
+                    number.style.animationDuration = `${duration}s`;
+                    
+                    // 添加到容器
+                    numbersContainer.appendChild(number);
+                    
+                    // 动画结束后移除
+                    setTimeout(() => {
+                        number.remove();
+                    }, duration * 1000);
+                }, i * 800);
+            }
+            
+            // 每隔一段时间继续生成新数字
+            setInterval(() => {
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        const number = document.createElement('div');
+                        number.className = 'floating-number';
+                        
+                        const top = Math.random() * 90 + 5;
+                        const left = Math.random() * 90 + 5;
+                        number.style.top = `${top}%`;
+                        number.style.left = `${left}%`;
+                        
+                        const moveX = (Math.random() - 0.5) * 200;
+                        const moveY = (Math.random() - 0.5) * 200;
+                        number.style.setProperty('--move-x', `${moveX}px`);
+                        number.style.setProperty('--move-y', `${moveY}px`);
+                        
+                        number.textContent = possibleNumbers[Math.floor(Math.random() * possibleNumbers.length)];
+                        
+                        const duration = 5 + Math.random() * 10;
+                        number.style.animationDuration = `${duration}s`;
+                        
+                        numbersContainer.appendChild(number);
+                        
+                        setTimeout(() => {
+                            number.remove();
+                        }, duration * 1000);
+                    }, i * 500);
+                }
+            }, 5000);
+        });
+    </script>
+</body>
+</html> 

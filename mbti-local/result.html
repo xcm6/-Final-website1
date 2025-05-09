@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI测试结果 | E-Girl风格</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="noise"></div>
+    <div class="heart-particles" id="heartParticles"></div>
+    
+    <a href="index.html" class="return-link">返回首页</a>
+    
+    <div class="container">
+        <h1>你的MBTI类型是</h1>
+        
+        <div class="result-container">
+            <div class="result-header">
+                <div class="personality-type" id="personalityType">XXXX</div>
+                <div class="personality-name" id="personalityName">加载中...</div>
+            </div>
+            
+            <div class="trait-bars">
+                <div class="trait-bar">
+                    <div class="trait-labels">
+                        <span class="trait-label">外向 (E)</span>
+                        <span class="trait-label">内向 (I)</span>
+                    </div>
+                    <div class="trait-bar-container">
+                        <div class="trait-progress" id="eiBar"></div>
+                        <div class="trait-percentage" id="eiPercentage">50%</div>
+                    </div>
+                </div>
+                
+                <div class="trait-bar">
+                    <div class="trait-labels">
+                        <span class="trait-label">实感 (S)</span>
+                        <span class="trait-label">直觉 (N)</span>
+                    </div>
+                    <div class="trait-bar-container">
+                        <div class="trait-progress" id="snBar"></div>
+                        <div class="trait-percentage" id="snPercentage">50%</div>
+                    </div>
+                </div>
+                
+                <div class="trait-bar">
+                    <div class="trait-labels">
+                        <span class="trait-label">思考 (T)</span>
+                        <span class="trait-label">情感 (F)</span>
+                    </div>
+                    <div class="trait-bar-container">
+                        <div class="trait-progress" id="tfBar"></div>
+                        <div class="trait-percentage" id="tfPercentage">50%</div>
+                    </div>
+                </div>
+                
+                <div class="trait-bar">
+                    <div class="trait-labels">
+                        <span class="trait-label">判断 (J)</span>
+                        <span class="trait-label">感知 (P)</span>
+                    </div>
+                    <div class="trait-bar-container">
+                        <div class="trait-progress" id="jpBar"></div>
+                        <div class="trait-percentage" id="jpPercentage">50%</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="result-description" id="resultDescription">
+                <p>正在加载您的个性类型描述...</p>
+            </div>
+            
+            <div class="buttons" style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
+                <a href="question.html" class="btn">重新测试</a>
+                <a href="about.html" class="btn">关于MBTI</a>
+                <a href="matches.html" class="btn">匹配类型</a>
+            </div>
+            
+            <div class="share-buttons">
+                <a href="#" class="share-button" id="shareWeibo">微</a>
+                <a href="#" class="share-button" id="shareWechat">信</a>
+                <a href="#" class="share-button" id="shareQQ">Q</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // MBTI类型描述数据
+        const mbtiTypeData = {};
+        
+        // 添加INTJ类型数据
+        mbtiTypeData["INTJ"] = {
+            name: "建筑师 (Architect)",
+            description: "INTJ型人格被称为"建筑师"，富有想象力且战略性强的思想家，对于任何事情都有一个计划。他们注重理性思维，高度求知，往往通过自己的创新见解和独特视角在项目中表现突出。他们偏爱解决复杂的概念性问题，善于构思系统、模型和长期战略。\n\nINTJ型人格者追求效率和逻辑，喜欢独立工作，并且在做决策时非常果断。他们会彻底地分析情况，评估每种选择的优缺点，然后制定清晰的行动计划。虽然INTJ型人格可能显得有些疏远或孤傲，但他们对自己关心的事物非常投入，并且会为实现目标而坚持不懈。",
+            strengths: ["分析能力强", "独立自主", "创新思维", "果断决策", "战略规划能力", "追求知识和自我提升"],
+            weaknesses: ["有时过于批判", "可能显得傲慢", "情感表达困难", "完美主义倾向", "不喜欢权威和传统"],
+            careers: ["科学研究", "系统分析", "工程设计", "企业战略", "投资分析", "学术研究"]
+        };
+        
+        // 添加INTP类型数据
+        mbtiTypeData["INTP"] = {
+            name: "逻辑学家 (Logician)",
+            description: "INTP型人格被称为"逻辑学家"，具有创新性思维的发明家，总是渴望寻找模式和逻辑解释。他们喜欢理论和抽象概念，热衷于分析复杂问题并发现其中的规律。INTP型人格者拥有丰富的内心世界，充满好奇心和创造力。\n\nINTP型人格者通常表现为安静且内敛，但在他们感兴趣的话题上可能会变得非常健谈。他们通常不受传统约束，更喜欢通过自己的分析来得出结论。尽管他们可能显得有些疏离或分心，但INTP型人格者在解决需要创新思维的复杂问题时表现出色。",
+            strengths: ["原创思维", "逻辑推理能力", "开放心态", "客观分析", "解决复杂问题的能力"],
+            weaknesses: ["有时过于沉浸在思考中", "可能忽视情感需求", "实践能力可能不足", "对日常细节缺乏耐心"],
+            careers: ["软件开发", "数据分析", "科学研究", "工程设计", "哲学", "数学"]
+        };
+        
+        // 添加ENTJ类型数据
+        mbtiTypeData["ENTJ"] = {
+            name: "指挥官 (Commander)",
+            description: "ENTJ型人格被称为"指挥官"，大胆、果断的领导者，总是找到达成目标的方法。他们具有杰出的组织和规划能力，善于制定战略并领导团队实现目标。ENTJ型人格者通常思维敏捷，表达清晰，并且对效率和结果有很高的要求。\n\nENTJ型人格者热爱挑战，渴望掌控局面，经常在职业生涯中担任领导角色。他们非常有决断力，能够在复杂情况下做出迅速而合理的决策。尽管ENTJ型人格者有时可能显得强势或专横，但他们往往能够激励他人，并引导团队取得卓越成就。",
+            strengths: ["领导能力", "战略思维", "果断决策", "高效执行", "组织能力", "直接坦率的沟通"],
+            weaknesses: ["可能显得专横", "不耐烦", "情感表达不足", "过于追求控制"],
+            careers: ["企业管理", "项目管理", "管理咨询", "创业", "政治领导", "法律"]
+        };
+        
+        // 添加ENTP类型数据
+        mbtiTypeData["ENTP"] = {
+            name: "辩论家 (Debater)",
+            description: "ENTP型人格被称为"辩论家"，聪明好奇的思想家，无法抗拒智力挑战。他们具有快速的思维和出色的语言表达能力，喜欢挑战传统观念并探索新的可能性。ENTP型人格者擅长发现联系和模式，能够从不同角度看待问题。\n\nENTP型人格者充满活力和创造力，喜欢与他人交流想法，并在辩论中测试自己的理论。他们通常对各种主题有广泛的兴趣，不断寻求新的知识和经验。尽管ENTP型人格者有时可能显得争辩好胜，但他们的创新思维和解决问题的能力使他们成为宝贵的团队成员。",
+            strengths: ["创新思维", "辩论能力", "适应性强", "思路开阔", "解决问题的能力"],
+            weaknesses: ["可能过于争辩", "缺乏持久的专注力", "不喜欢常规和细节", "可能忽视情感因素"],
+            careers: ["创业", "营销策略", "法律", "咨询", "产品开发", "政治"]
+        };
+        
+        // 添加INFJ类型数据
+        mbtiTypeData["INFJ"] = {
+            name: "提倡者 (Advocate)",
+            description: "INFJ型人格被称为"提倡者"，安静而神秘的理想主义者，总是充满灵感和独特的见解。他们深思熟虑，富有同情心，通常对社会问题和人际关系有着深刻的理解。INFJ型人格者通常具有强烈的内在价值观，并致力于为世界带来积极的变化。\n\nINFJ型人格者通常保持低调，但他们的想法和见解往往深刻而有远见。他们善于倾听和理解他人，经常在朋友和同事中扮演顾问的角色。尽管INFJ型人格者可能显得神秘或难以接近，但他们对亲近的人非常忠诚和支持，并且在追求自己信念的过程中展现出极大的决心。",
+            strengths: ["洞察力", "创造力", "决心", "利他主义", "同理心", "清晰的价值观"],
+            weaknesses: ["完美主义", "过度理想化", "可能过于敏感", "不愿分享个人感受", "过度付出"],
+            careers: ["心理咨询", "教育", "艺术创作", "非营利组织工作", "医疗保健", "宗教服务"]
+        };
+        
+        // 添加INFP类型数据
+        mbtiTypeData["INFP"] = {
+            name: "调停者 (Mediator)",
+            description: "INFP型人格被称为"调停者"，诗意而善良的理想主义者，总是准备帮助好的事业。他们具有丰富的想象力和强烈的个人价值观，对自己和他人都有很高的道德标准。INFP型人格者通常对他人的情感非常敏感，希望通过自己的行动创造更美好的世界。\n\nINFP型人格者通常非常有创造力，喜欢表达自己的独特视角。他们往往通过艺术、写作或其他创造性的追求来表达自己的想法和情感。尽管INFP型人格者可能显得安静或保留，但他们对自己信仰的事物充满热情，并且在帮助他人和促进和谐方面表现出色。",
+            strengths: ["创造力", "同理心", "开放思想", "忠诚", "适应性", "对价值观的坚持"],
+            weaknesses: ["过度理想化", "过度批评自己", "实际能力可能不足", "回避冲突", "过度敏感"],
+            careers: ["写作", "心理咨询", "教育", "艺术", "社会工作", "人力资源"]
+        };
+        
+        // 添加ENFJ类型数据
+        mbtiTypeData["ENFJ"] = {
+            name: "主角 (Protagonist)",
+            description: "ENFJ型人格被称为"主角"，具有魅力和鼓舞人心的领导者，能够吸引听众。他们热情、有责任感，非常关注他人的需求和感受。ENFJ型人格者通常能够很好地理解人际动态，并利用这种理解来激励和团结他人。\n\nENFJ型人格者通常非常外向和善于表达，能够轻松地与各种人建立联系。他们往往有很强的价值观和道德准则，希望通过自己的行动对世界产生积极影响。尽管ENFJ型人格者有时可能过度关注他人而忽视自己的需求，但他们的温暖、同理心和领导能力使他们成为各种团队和组织中的宝贵成员。",
+            strengths: ["同理心", "领导能力", "组织能力", "可靠性", "沟通能力", "人际关系技巧"],
+            weaknesses: ["可能过度理想化", "过于为他人着想", "难以接受批评", "可能过度操控"],
+            careers: ["教育", "咨询", "医疗保健", "人力资源", "非营利组织管理", "销售"]
+        };
+        
+        // 添加ENFP类型数据
+        mbtiTypeData["ENFP"] = {
+            name: "探险家 (Campaigner)",
+            description: "ENFP型人格被称为"探险家"，热情、有创造力的自由灵魂，总能找到理由微笑。他们充满活力和好奇心，渴望探索新的想法和可能性。ENFP型人格者通常善于发现联系和模式，能够以创新的方式解决问题。\n\nENFP型人格者通常非常外向和社交，容易与各种人建立联系。他们对生活保持热情和乐观的态度，经常激励他人追求自己的梦想和激情。尽管ENFP型人格者有时可能显得分心或不切实际，但他们的创造力、同理心和适应能力使他们成为各种环境中的受欢迎伙伴。",
+            strengths: ["创造力", "热情", "人际交往能力", "适应性", "乐观精神", "对他人的关心"],
+            weaknesses: ["可能不切实际", "注意力不集中", "不喜欢常规", "不善于处理细节", "过度分析"],
+            careers: ["咨询", "教育", "艺术", "市场营销", "人事管理", "娱乐"]
+        };
+        
+        // 添加ISTJ类型数据
+        mbtiTypeData["ISTJ"] = {
+            name: "物流师 (Logistician)",
+            description: "ISTJ型人格被称为"物流师"，实际而注重事实的个体，可靠性无与伦比。他们注重秩序、责任和传统，通常非常有条理和值得信赖。ISTJ型人格者依靠逻辑和事实做决策，重视清晰的规则和结构。\n\nISTJ型人格者通常沉默寡言、严肃认真，更喜欢通过行动而非言语表达自己。他们尊重传统和权威，通常会遵循既定的程序和规范。尽管ISTJ型人格者有时可能显得固执或缺乏灵活性，但他们的可靠性、勤勉和实用性使他们成为工作场所和家庭中不可或缺的成员。",
+            strengths: ["可靠", "实用性", "组织能力", "注重细节", "忠诚", "逻辑思维"],
+            weaknesses: ["可能过于固执", "不喜欢变化", "可能过于严肃", "情感表达不足", "不灵活"],
+            careers: ["会计", "审计", "军事", "工程", "法律", "医疗保健管理"]
+        };
+        
+        // 添加ISFJ类型数据
+        mbtiTypeData["ISFJ"] = {
+            name: "守卫者 (Defender)",
+            description: "ISFJ型人格被称为"守卫者"，非常专注和温暖的保护者，总是准备保护他们关心的人。他们谨慎、有责任感，并且深切关注他人的需求和感受。ISFJ型人格者通常具有出色的记忆力，特别是关于与重要人物相关的细节。\n\nISFJ型人格者通常安静而保留，但对朋友和家人非常忠诚和支持。他们重视传统和安全，通常会为了维护他人的舒适和幸福而努力工作。尽管ISFJ型人格者有时可能过于谦虚或不愿表达自己的需求，但他们的细心、可靠性和同理心使他们成为各种关系和工作环境中的宝贵伙伴。",
+            strengths: ["忠诚", "关心他人", "注重细节", "可靠性", "实用性", "耐心"],
+            weaknesses: ["可能过于自我牺牲", "回避变化", "难以说\"不\"", "过于谦虚", "可能隐藏感受"],
+            careers: ["护理", "教学", "行政支持", "社会工作", "医疗保健", "客户服务"]
+        };
+        
+        // 添加ESTJ类型数据
+        mbtiTypeData["ESTJ"] = {
+            name: "总经理 (Executive)",
+            description: "ESTJ型人格被称为"总经理"，优秀的管理者，对于人和事物总是井井有条。他们注重传统和秩序，擅长组织人员和资源以实现目标。ESTJ型人格者通常直接、诚实，重视结构和明确的规则。\n\nESTJ型人格者通常外向、自信，愿意在团体中承担领导角色。他们重视责任和公平，期望自己和他人都遵守既定标准。尽管ESTJ型人格者有时可能显得固执或过于关注规则，但他们的组织能力、决断力和可靠性使他们成为职场和社区中的有效领导者。",
+            strengths: ["组织能力", "诚实直接", "忠诚", "坚守承诺", "决断力", "实际思维"],
+            weaknesses: ["可能过于严格", "不灵活", "不善于处理情感", "可能过于专注于规则", "批判性强"],
+            careers: ["管理", "金融", "军事", "法律执行", "工程", "项目管理"]
+        };
+        
+        // 添加ESFJ类型数据
+        mbtiTypeData["ESFJ"] = {
+            name: "执政官 (Consul)",
+            description: "ESFJ型人格被称为"执政官"，极度关心的、善于社交的热心人士，总是热心助人。他们重视和谐、合作和传统，通常非常注重他人的需求和感受。ESFJ型人格者通常具有出色的社交技巧，善于建立和维护人际关系。\n\nESFJ型人格者通常外向、热情，喜欢与他人互动并创造温馨的氛围。他们往往是社区和家庭中的支柱，经常为了确保他人的舒适和幸福而努力工作。尽管ESFJ型人格者有时可能过度关注他人的期望或过于传统，但他们的温暖、组织能力和关心使他们成为各种社交和工作环境中的受欢迎伙伴。",
+            strengths: ["合作精神", "同理心", "实际性", "忠诚", "传统价值观", "社交能力"],
+            weaknesses: ["可能过于关注社会认可", "过度敏感", "不善于应对批评", "可能回避变化", "容易担忧"],
+            careers: ["医疗保健", "教育", "人力资源", "社会工作", "客户服务", "销售"]
+        };
+        
+        // 添加ISTP类型数据
+        mbtiTypeData["ISTP"] = {
+            name: "鉴赏家 (Virtuoso)",
+            description: "ISTP型人格被称为"鉴赏家"，大胆而实际的实验者，擅长使用任何形式的工具。他们具有探索精神，喜欢理解物体如何运作，并善于解决实际问题。ISTP型人格者通常逻辑思维强，喜欢动手操作和冒险。\n\nISTP型人格者通常保持独立和冷静，更喜欢通过行动而非言语表达自己。他们通常在紧急情况下表现出色，能够迅速分析情况并找到实用的解决方案。尽管ISTP型人格者有时可能显得疏远或冷漠，但他们的适应性、技术技能和解决问题的能力使他们成为各种实际和技术领域的宝贵贡献者。",
+            strengths: ["问题解决能力", "适应性", "实用性", "技术技能", "冷静", "独立性"],
+            weaknesses: ["可能显得疏远", "不喜欢承诺", "可能冒险", "不善于表达情感", "可能不关注长期规划"],
+            careers: ["工程", "机械", "急救人员", "建筑", "信息技术", "运动员"]
+        };
+        
+        // 添加ISFP类型数据
+        mbtiTypeData["ISFP"] = {
+            name: "冒险家 (Adventurer)",
+            description: "ISFP型人格被称为"冒险家"，灵活而有魅力的艺术家，总是准备探索和体验新事物。他们具有强烈的审美感和对个人价值的坚持，通常对生活持有开放和接受的态度。ISFP型人格者通常通过行动而非言语表达自己，尤其是通过艺术和创造性的追求。\n\nISFP型人格者通常安静而保留，但拥有内在的热情和深度。他们喜欢自由和灵活，通常按照自己的步调生活，避免严格的规则和结构。尽管ISFP型人格者有时可能显得难以捉摸或优柔寡断，但他们的创造力、同理心和真实性使他们成为各种艺术和关怀领域的出色贡献者。",
+            strengths: ["创造力", "美感", "同理心", "实用性", "灵活性", "平易近人"],
+            weaknesses: ["可能回避冲突", "过于保留", "缺乏长远规划", "不喜欢理论和抽象", "易感"],
+            careers: ["艺术", "设计", "医疗保健", "音乐", "美容行业", "自然相关职业"]
+        };
+        
+        // 添加ESTP类型数据
+        mbtiTypeData["ESTP"] = {
+            name: "企业家 (Entrepreneur)",
+            description: "ESTP型人格被称为"企业家"，聪明、精力充沛、善于察言观色的个体，总是喜欢生活在边缘。他们实用、适应性强，喜欢即时行动和解决具体问题。ESTP型人格者通常思维敏捷，能够迅速适应新环境和挑战。\n\nESTP型人格者通常外向、社交，喜欢与他人互动和体验刺激活动。他们通常是现实主义者，专注于当下，而不是未来的可能性。尽管ESTP型人格者有时可能显得冲动或不关注长期后果，但他们的魅力、适应性和解决问题的能力使他们成为各种环境中的引人注目的影响者。",
+            strengths: ["行动导向", "适应性", "解决问题的能力", "实用性", "社交技巧", "灵活性"],
+            weaknesses: ["可能不关注长期规划", "不喜欢理论", "可能冒险", "不善于遵循规则", "可能不耐烦"],
+            careers: ["销售", "市场营销", "创业", "紧急服务", "运动与健身", "表演艺术"]
+        };
+        
+        // 添加ESFP类型数据
+        mbtiTypeData["ESFP"] = {
+            name: "表演者 (Entertainer)",
+            description: "ESFP型人格被称为"表演者"，自发而充满活力的热心人士，生活永远不会显得无聊。他们喜欢社交互动、享受当下，并通常给周围的人带来乐趣和能量。ESFP型人格者通常具有出色的观察力，能够捕捉到他人可能错过的细节。\n\nESFP型人格者通常外向、友好，喜欢成为关注的焦点并娱乐他人。他们通常对审美有敏锐的感知，喜欢美丽和舒适的环境。尽管ESFP型人格者有时可能显得冲动或回避严肃话题，但他们的热情、同理心和适应能力使他们成为各种社交和创意环境中的受欢迎伙伴。",
+            strengths: ["社交技巧", "热情", "审美感", "实用性", "观察力", "灵活性"],
+            weaknesses: ["可能回避冲突", "注意力不集中", "不善于长期规划", "可能逃避责任", "可能寻求过度刺激"],
+            careers: ["娱乐业", "销售", "旅游业", "餐饮业", "教育", "公共关系"]
+        };
+        
+        // 从本地存储加载MBTI结果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 检查是否存在结果数据
+            const resultData = localStorage.getItem('mbtiResult');
+            
+            if (!resultData) {
+                // 如果没有结果数据，重定向到测试页面
+                window.location.href = 'question.html';
+                return;
+            }
+            
+            // 解析结果数据
+            const result = JSON.parse(resultData);
+            const mbtiType = result.type;
+            const percentages = result.percentages;
+            const counts = result.counts;
+            
+            // 如果没有匹配的类型数据，使用默认数据
+            if (!mbtiTypeData[mbtiType]) {
+                console.error('未找到匹配的MBTI类型数据:', mbtiType);
+                return;
+            }
+            
+            // 更新页面内容
+            updatePageContent(mbtiType, percentages, counts);
+            
+            // 创建心形粒子效果
+            initializeHeartParticles();
+            
+            // 设置分享按钮
+            setupShareButtons(mbtiType);
+        });
+        
+        // 更新页面内容
+        function updatePageContent(mbtiType, percentages, counts) {
+            const typeData = mbtiTypeData[mbtiType];
+            
+            // 更新类型显示
+            document.getElementById('personalityType').textContent = mbtiType;
+            document.getElementById('personalityName').textContent = typeData.name;
+            
+            // 更新结果描述
+            let descriptionHTML = `
+                <p>${typeData.description.replace(/\n\n/g, '</p><p>')}</p>
+                
+                <h3>你的优势:</h3>
+                <ul>
+                    ${typeData.strengths.map(s => `<li>${s}</li>`).join('')}
+                </ul>
+                
+                <h3>可能的挑战:</h3>
+                <ul>
+                    ${typeData.weaknesses.map(w => `<li>${w}</li>`).join('')}
+                </ul>
+                
+                <h3>适合的职业方向:</h3>
+                <ul>
+                    ${typeData.careers.map(c => `<li>${c}</li>`).join('')}
+                </ul>
+                
+                <p>记住，MBTI只是一种工具，每个人都是独特的，不同的测试结果可能会有所变化。这些描述仅供参考，最终你自己才是最了解自己的人。</p>
+            `;
+            
+            document.getElementById('resultDescription').innerHTML = descriptionHTML;
+            
+            // 更新特质栏
+            updateTraitBars(mbtiType, percentages, counts);
+        }
+        
+        // 更新特质栏
+        function updateTraitBars(mbtiType, percentages, counts) {
+            // 更新E/I条
+            const eiPercentage = mbtiType.startsWith('E') 
+                ? (counts.E / (counts.E + counts.I) * 100).toFixed(0)
+                : (counts.I / (counts.E + counts.I) * 100).toFixed(0);
+            
+            document.getElementById('eiBar').style.width = `${eiPercentage}%`;
+            document.getElementById('eiPercentage').textContent = `${eiPercentage}%`;
+            
+            if (mbtiType.startsWith('E')) {
+                document.getElementById('eiBar').style.background = 'linear-gradient(90deg, var(--primary-color), var(--secondary-color))';
+            } else {
+                document.getElementById('eiBar').style.background = 'linear-gradient(90deg, var(--secondary-color), var(--primary-color))';
+                document.getElementById('eiBar').style.marginLeft = `${100 - eiPercentage}%`;
+            }
+            
+            // 更新S/N条
+            const snPercentage = mbtiType.includes('S') 
+                ? (counts.S / (counts.S + counts.N) * 100).toFixed(0)
+                : (counts.N / (counts.S + counts.N) * 100).toFixed(0);
+            
+            document.getElementById('snBar').style.width = `${snPercentage}%`;
+            document.getElementById('snPercentage').textContent = `${snPercentage}%`;
+            
+            if (mbtiType.includes('S')) {
+                document.getElementById('snBar').style.background = 'linear-gradient(90deg, var(--primary-color), var(--secondary-color))';
+            } else {
+                document.getElementById('snBar').style.background = 'linear-gradient(90deg, var(--secondary-color), var(--primary-color))';
+                document.getElementById('snBar').style.marginLeft = `${100 - snPercentage}%`;
+            }
+            
+            // 更新T/F条
+            const tfPercentage = mbtiType.includes('T') 
+                ? (counts.T / (counts.T + counts.F) * 100).toFixed(0)
+                : (counts.F / (counts.T + counts.F) * 100).toFixed(0);
+            
+            document.getElementById('tfBar').style.width = `${tfPercentage}%`;
+            document.getElementById('tfPercentage').textContent = `${tfPercentage}%`;
+            
+            if (mbtiType.includes('T')) {
+                document.getElementById('tfBar').style.background = 'linear-gradient(90deg, var(--primary-color), var(--secondary-color))';
+            } else {
+                document.getElementById('tfBar').style.background = 'linear-gradient(90deg, var(--secondary-color), var(--primary-color))';
+                document.getElementById('tfBar').style.marginLeft = `${100 - tfPercentage}%`;
+            }
+            
+            // 更新J/P条
+            const jpPercentage = mbtiType.includes('J') 
+                ? (counts.J / (counts.J + counts.P) * 100).toFixed(0)
+                : (counts.P / (counts.J + counts.P) * 100).toFixed(0);
+            
+            document.getElementById('jpBar').style.width = `${jpPercentage}%`;
+            document.getElementById('jpPercentage').textContent = `${jpPercentage}%`;
+            
+            if (mbtiType.includes('J')) {
+                document.getElementById('jpBar').style.background = 'linear-gradient(90deg, var(--primary-color), var(--secondary-color))';
+            } else {
+                document.getElementById('jpBar').style.background = 'linear-gradient(90deg, var(--secondary-color), var(--primary-color))';
+                document.getElementById('jpBar').style.marginLeft = `${100 - jpPercentage}%`;
+            }
+        }
+        
+        // 初始化心形粒子
+        function initializeHeartParticles() {
+            const heartContainer = document.getElementById('heartParticles');
+            const heartSymbols = ['♥', '❤', '💕', '💖', '💗'];
+            
+            // 每隔一段时间创建新的心形
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    createHeart();
+                }
+            }, 1000);
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // 随机位置
+                heart.style.left = Math.random() * 100 + '%';
+                
+                // 随机大小
+                const size = Math.random() * 15 + 8;
+                heart.style.fontSize = size + 'px';
+                
+                // 随机颜色
+                const colors = ['#ff69b4', '#ff1493', '#ee82ee', '#da70d6', '#c71585'];
+                heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 随机动画时长
+                const duration = Math.random() * 3 + 4;
+                heart.style.animationDuration = duration + 's';
+                
+                heartContainer.appendChild(heart);
+                
+                // 动画结束后移除元素
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+        }
+        
+        // 设置分享按钮
+        function setupShareButtons(mbtiType) {
+            const shareTitle = `我的MBTI人格类型是${mbtiType}！`;
+            const shareUrl = window.location.href;
+            
+            // 微博分享
+            document.getElementById('shareWeibo').addEventListener('click', function(e) {
+                e.preventDefault();
+                const weiboUrl = `http://service.weibo.com/share/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}`;
+                window.open(weiboUrl, '_blank');
+            });
+            
+            // 微信分享（显示二维码或提示）
+            document.getElementById('shareWechat').addEventListener('click', function(e) {
+                e.preventDefault();
+                alert('请截屏分享到微信或使用微信扫描页面');
+            });
+            
+            // QQ分享
+            document.getElementById('shareQQ').addEventListener('click', function(e) {
+                e.preventDefault();
+                const qqUrl = `http://connect.qq.com/widget/shareqq/index.html?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}`;
+                window.open(qqUrl, '_blank');
+            });
+        }
+    </script>
+</body>
+</html> 

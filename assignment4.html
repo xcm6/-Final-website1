@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASSIGNMENT #4 | E-GIRL STYLE</title>
+    <link rel="stylesheet" href="css/globals.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a0115;
+            color: #ffffff;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Basic container */
+        .container {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 1000;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: fadeInNav 0.8s ease-out forwards 0.5s;
+        }
+
+        .nav-decoration {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: calc(100% + 20px);
+            height: calc(100% + 20px);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            z-index: -1;
+            opacity: 0;
+            animation: decorationFadeIn 1s forwards 0.7s;
+        }
+
+        @keyframes fadeInNav {
+            0% { opacity: 0; transform: translateY(-20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes decorationFadeIn {
+            0% { opacity: 0; transform: scale(0.8); }
+            100% { opacity: 0.7; transform: scale(1); }
+        }
+
+        nav a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
+            position: relative;
+        }
+
+        nav a::before {
+            content: attr(data-text);
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 10px;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #ff69b4;
+        }
+
+        nav a:hover::before {
+            opacity: 1;
+        }
+
+        /* Visual effect layers */
+        .noise {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/png;base64,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');
+            opacity: 0.06;
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .egirl-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.1;
+            mix-blend-mode: screen;
+            animation: pulseOpacity 10s infinite;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(255,105,180,0.2), transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255,20,147,0.2), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(238,130,238,0.2), transparent 70%);
+        }
+
+        @keyframes pulseOpacity {
+            0%, 100% { opacity: 0.1; filter: hue-rotate(0deg); }
+            50% { opacity: 0.3; filter: hue-rotate(180deg); }
+        }
+
+        /* Glitch effect */
+        .glitch-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+            mix-blend-mode: overlay;
+            opacity: 0.05;
+            animation: glitchEffect 8s linear infinite;
+            background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAFElEQVQImWNgYGAwZsAE////B2MAmVQPByr2BPkAAAAASUVORK5CYII=');
+        }
+
+        @keyframes glitchEffect {
+            0%, 100% { transform: translateX(0); opacity: 0.05; }
+            45% { transform: translateX(0); opacity: 0.05; }
+            50% { transform: translateX(5px); opacity: 0.1; }
+            55% { transform: translateX(-5px); opacity: 0.1; }
+            60% { transform: translateX(0); opacity: 0.05; }
+            85% { transform: translateX(0); opacity: 0.05; }
+            90% { transform: translateX(-2px); opacity: 0.08; }
+            95% { transform: translateX(2px); opacity: 0.08; }
+        }
+
+        /* Website title */
+        .site-title {
+            position: relative;
+            padding: 100px 0 50px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .main-title {
+            font-size: 5vw;
+            line-height: 1;
+            margin: 0;
+            font-weight: 300;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5em;
+            animation: textGlow 4s infinite alternate;
+        }
+
+        .subtitle {
+            font-size: 1vw;
+            color: rgba(255,255,255,0.6);
+            margin-top: 20px;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255,105,180,0.5), 0 0 20px rgba(255,105,180,0.3); }
+            50% { text-shadow: 0 0 20px rgba(238,130,238,0.5), 0 0 40px rgba(238,130,238,0.3); }
+        }
+
+        /* Heart particles */
+        .heart-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .heart {
+            position: absolute;
+            font-size: 12px;
+            opacity: 0;
+            color: #ff69b4;
+            animation: floatHeart 5s linear forwards;
+        }
+
+        @keyframes floatHeart {
+            0% { opacity: 0; transform: translateY(0) rotate(0); }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.8; }
+            100% { opacity: 0; transform: translateY(-150px) rotate(360deg); }
+        }
+
+        /* MBTI test launch button styles */
+        .mbti-button-container {
+            position: relative;
+            width: 80%;
+            margin: 30px auto 50px;
+            text-align: center;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 105, 180, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.2);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .mbti-button-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.4);
+        }
+        
+        .mbti-title {
+            font-size: 2rem;
+            color: #fff;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            animation: textGlow 4s infinite alternate;
+        }
+        
+        .mbti-desc {
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+        
+        .start-mbti-button {
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            background: linear-gradient(45deg, #ff1493, #ff69b4);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 5px 15px rgba(255, 20, 147, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .start-mbti-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .start-mbti-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 20, 147, 0.6);
+        }
+        
+        .start-mbti-button:hover::before {
+            left: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="noise"></div>
+        <div class="egirl-overlay"></div>
+        <div class="glitch-effect"></div>
+        <div class="heart-particles" id="heartParticles"></div>
+        
+        <!-- Navigation bar -->
+        <nav>
+            <div class="nav-links">
+                <div class="nav-decoration"></div>
+                <a href="index.html" data-text="01">HOME</a>
+                <a href="about.html" data-text="02">ABOUT</a>
+                <a href="new-projects.html" data-text="03">PROJECTS</a>
+                <a href="current-assignment.html" data-text="04">ASSIGNMENT #2</a>
+                <a href="assignment3.html" data-text="05">ASSIGNMENT #3</a>
+                <a href="assignment4.html" data-text="06">ASSIGNMENT #4</a>
+                <a href="final-choice.html" data-text="07">FINAL</a>
+            </div>
+        </nav>
+        
+        <!-- Title section -->
+        <div class="site-title">
+            <h1 class="main-title">ASSIGNMENT #4</h1>
+            <div class="subtitle">Community Tool</div>
+        </div>
+        
+        <!-- MBTI test launch button -->
+        <div class="mbti-button-container">
+            <h2 class="mbti-title">Discover Your MBTI Personality Type</h2>
+            <p class="mbti-desc">Take our carefully designed test to learn about your true personality traits</p>
+            <button id="startMbtiButton" class="start-mbti-button">Start Test</button>
+        </div>
+    </div>
+
+    <script>
+        // Heart particles effect
+        document.addEventListener('DOMContentLoaded', function() {
+            const heartContainer = document.getElementById('heartParticles');
+            const heartSymbols = ['♥', '❤', '💕', '💖', '💗'];
+            
+            // Initially create some hearts
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createHeart();
+                }, i * 300);
+            }
+            
+            // Create new hearts periodically
+            setInterval(() => {
+                createHeart();
+            }, 500);
+            
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                
+                // Random position
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.bottom = '0';
+                
+                // Random size
+                const size = Math.random() * 20 + 10;
+                heart.style.fontSize = size + 'px';
+                
+                // Random animation duration
+                const duration = Math.random() * 3 + 3;
+                heart.style.animationDuration = duration + 's';
+                
+                heartContainer.appendChild(heart);
+                
+                // Remove element after animation ends
+                setTimeout(() => {
+                    heart.remove();
+                }, duration * 1000);
+            }
+            
+            // Create more hearts on click
+            document.addEventListener('click', function(e) {
+                // Create hearts at click position
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(() => {
+                        const heart = document.createElement('div');
+                        heart.className = 'heart';
+                        heart.textContent = heartSymbols[Math.floor(Math.random() * heartSymbols.length)];
+                        
+                        // Set at click position
+                        heart.style.position = 'fixed';
+                        heart.style.left = e.clientX + 'px';
+                        heart.style.top = e.clientY + 'px';
+                        
+                        // Random size
+                        const size = Math.random() * 30 + 15;
+                        heart.style.fontSize = size + 'px';
+                        
+                        // Random color
+                        const colors = ['#ff69b4', '#ff1493', '#ee82ee', '#da70d6', '#c71585'];
+                        heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        heartContainer.appendChild(heart);
+                        
+                        // Remove after 2 seconds
+                        setTimeout(() => {
+                            heart.remove();
+                        }, 2000);
+                    }, i * 100);
+                }
+            });
+        });
+        
+        // MBTI test launch button event
+        document.getElementById('startMbtiButton').addEventListener('click', function() {
+            window.location.href = 'mbti_test/index.html';
+        });
+    </script>
+</body>
+</html> 
